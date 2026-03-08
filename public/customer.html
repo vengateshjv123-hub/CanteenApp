@@ -9,15 +9,16 @@
 
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f8f9fa; }
-        .navbar { background-color: #2563eb; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .navbar { background-color: #2563eb; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
         .navbar h2 { margin: 0; font-size: 24px; }
         
-        .cart-btn { background-color: white; color: #2563eb; border: 2px solid white; padding: 12px 25px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: transform 0.2s; font-size: 20px; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
-        .cart-btn:hover { transform: scale(1.05); }
+        .cart-btn { background-color: white; color: #2563eb; border: 2px solid white; padding: 12px 25px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; font-size: 20px; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .cart-btn:hover { transform: scale(1.05); box-shadow: 0 6px 12px rgba(0,0,0,0.3); }
         .logout-btn { background: transparent; color: white; border: 1px solid white; padding: 8px 12px; border-radius: 6px; cursor: pointer; margin-right: 15px; font-weight: bold; }
+        .logout-btn:hover { background: rgba(255,255,255,0.2); }
         
         .menu-container { padding: 40px; display: flex; gap: 25px; flex-wrap: wrap; justify-content: center; }
-        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); width: 220px; text-align: center; border: 1px solid #e5e7eb; display: flex; flex-direction: column; transition: transform 0.2s; }
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); width: 220px; text-align: center; border: 1px solid #e5e7eb; transition: transform 0.2s; display: flex; flex-direction: column; }
         .card:hover { transform: translateY(-5px); }
         .card h3 { margin: 10px 0 5px; color: #1f2937; }
         .card p.desc { color: #6b7280; font-size: 14px; min-height: 40px; margin: 0; }
@@ -27,6 +28,7 @@
         .limit-warning { color: #d97706; font-size: 12px; font-weight: bold; margin-bottom: 10px; height: 14px; }
         
         .btn-add { background-color: #2563eb; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; transition: background 0.3s; margin-top: auto; }
+        .btn-add:hover { background-color: #1d4ed8; }
         .btn-disabled { background-color: #9ca3af; cursor: not-allowed; }
         
         .qty-controls { display: flex; justify-content: space-between; align-items: center; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 5px; margin-top: auto; }
@@ -52,8 +54,10 @@
 
         #readyContent { text-align: center; border: 4px solid #10b981; }
         #cancelContent { text-align: center; border: 4px solid #ef4444; } 
+        
         #closedScreen { display: none; text-align: center; padding: 100px 20px; }
         #closedScreen h1 { color: #ef4444; font-size: 36px; }
+        #closedScreen p { color: #6b7280; font-size: 18px; }
     </style>
 </head>
 <body>
@@ -62,7 +66,7 @@
         <div class="login-card" id="infoStep">
             <h1 style="color: #2563eb; margin-top: 0; font-size: 40px;">🍔</h1>
             <h2 style="color: #1e3a8a; margin-top: 0;">QuickBite Canteen</h2>
-            <p style="color: #6b7280; margin-bottom: 20px;">Enter details to receive your verification code.</p>
+            <p style="color: #6b7280; margin-bottom: 20px;">Enter details to receive your verification code via email.</p>
             <input type="email" id="emailInput" class="login-input" placeholder="Email Address">
             <input type="tel" id="mobileInput" class="login-input" placeholder="10-Digit Mobile No." maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
             <button class="login-btn" id="sendBtn" onclick="sendEmailOTP()">Send OTP</button>
@@ -79,7 +83,7 @@
     </div>
 
     <div id="appWrapper" style="display: none;">
-        <div class="navbar">
+        <div class="navbar" id="mainNav">
             <h2>🍔 QuickBite Canteen</h2>
             <div id="cartArea" style="display: flex; align-items: center;">
                 <button class="logout-btn" onclick="logout()">Logout</button>
@@ -93,7 +97,7 @@
 
         <div id="closedScreen">
             <h1>🛑 Canteen is Closed</h1>
-            <p>Check back later!</p>
+            <p>The seller is not accepting orders right now. Please check back later!</p>
         </div>
     </div>
 
@@ -102,10 +106,12 @@
             <h2 style="margin-top: 0;">Your Cart</h2>
             <div id="cartItemsList"></div>
             <h3 id="cartTotal" style="text-align: right; color: #1f2937;">Total: ₹0</h3>
+            
             <div class="input-group">
                 <label style="font-weight: bold; display: block; margin-bottom: 5px;">Pickup Time (Optional)</label>
-                <input type="text" id="pickupTime" placeholder="e.g., 10:30 AM (ASAP)">
+                <input type="text" id="pickupTime" placeholder="e.g., 10:30 AM (Defaults to ASAP)">
             </div>
+            
             <button class="checkout-btn" onclick="placeOrder()">Place Order</button>
             <button class="close-btn" onclick="closeCart()">Close</button>
         </div>
@@ -113,23 +119,27 @@
 
     <div id="readyModal" class="modal">
         <div class="modal-content" id="readyContent">
-            <h1>🎉</h1><h2 style="color: #10b981;">Order is Ready!</h2>
-            <p id="readyMessage" style="font-weight: bold;"></p>
+            <h1 style="font-size: 50px; margin: 10px 0;">🎉</h1>
+            <h2 style="color: #10b981; margin-top: 0;">Order is Ready!</h2>
+            <p id="readyMessage" style="font-size: 18px; font-weight: bold; color: #1f2937;"></p>
+            <p style="color: #6b7280;">Please head to the counter to collect your food.</p>
             <button class="checkout-btn" onclick="closeReadyModal()">Got it!</button>
         </div>
     </div>
 
     <div id="cancelModal" class="modal">
         <div class="modal-content" id="cancelContent">
-            <h1>😔</h1><h2 style="color: #ef4444;">Order Cancelled</h2>
-            <p id="cancelMessage"></p>
+            <h1 style="font-size: 50px; margin: 10px 0;">😔</h1>
+            <h2 style="color: #ef4444; margin-top: 0;">Order Cancelled</h2>
+            <p id="cancelMessage" style="font-size: 18px; font-weight: bold; color: #1f2937;"></p>
+            <p style="color: #6b7280;">The seller was unable to fulfill this order and it has been cancelled.</p>
             <button class="checkout-btn" style="background-color: #ef4444;" onclick="closeCancelModal()">Okay</button>
         </div>
     </div>
 
     <script>
-        // --- 🛑 YOUR REAL EMAILJS CONFIGURATION ---
-        const SERVICE_ID = "service_j3kbcac"; 
+        // --- 🛑 1. EMAILJS CONFIGURATION ---
+        const SERVICE_ID = "service_uzeknsj"; 
         const TEMPLATE_ID = "template_5cxhvu7"; 
         const PUBLIC_KEY = "wUfYYvhMWJmnQ5FCs"; 
 
@@ -139,11 +149,15 @@
         let tempEmail = "";
         let tempMobile = "";
 
+        // --- 2. AUTHENTICATION & LOGIN LOGIC ---
         function checkAuth() {
             if (localStorage.getItem('userEmail')) {
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('appWrapper').style.display = 'block';
-                checkUpdates();
+                checkUpdates(); // Start the app update loops
+            } else {
+                document.getElementById('loginScreen').style.display = 'flex';
+                document.getElementById('appWrapper').style.display = 'none';
             }
         }
 
@@ -156,48 +170,85 @@
                 return;
             }
 
+            // Generate 4-digit code
             generatedOTP = Math.floor(1000 + Math.random() * 9000).toString();
+            
             const btn = document.getElementById('sendBtn');
-            btn.innerText = "Sending..."; btn.disabled = true;
+            btn.innerText = "Sending OTP...";
+            btn.disabled = true;
 
-            emailjs.send(SERVICE_ID, TEMPLATE_ID, { to_email: tempEmail, otp: generatedOTP })
-                .then(() => {
-                    document.getElementById('infoStep').style.display = 'none';
-                    document.getElementById('otpStep').style.display = 'block';
-                }).catch(err => {
-                    alert("Connection Error. Ensure Gmail permissions are granted in EmailJS.");
-                    btn.innerText = "Send OTP"; btn.disabled = false;
-                });
+            console.log("DEBUG: Attempting to send email...");
+            console.log("Service:", SERVICE_ID, "Template:", TEMPLATE_ID);
+
+            // Send via EmailJS with Advanced Error Logging
+            emailjs.send(SERVICE_ID, TEMPLATE_ID, {
+                to_email: tempEmail,
+                otp: generatedOTP
+            }).then((response) => {
+                console.log("DEBUG: SUCCESS!", response.status, response.text);
+                document.getElementById('infoStep').style.display = 'none';
+                document.getElementById('otpStep').style.display = 'block';
+            }).catch(err => {
+                console.error("DEBUG: EMAILJS FAILED!", err);
+                
+                // Detailed alert to figure out the exact bug
+                let errorDetails = err.text || err.message || JSON.stringify(err);
+                alert("Network Error Details:\n\n" + errorDetails + "\n\n1. Ensure 'Send email on your behalf' is checked in Gmail connection.\n2. Ensure your Render URL is added to 'Authorized Domains' in EmailJS Account settings.");
+                
+                btn.innerText = "Send OTP";
+                btn.disabled = false;
+            });
         }
 
         function verifyOTP() {
-            if (document.getElementById('otpInput').value === generatedOTP) {
+            const entered = document.getElementById('otpInput').value;
+            if (entered === generatedOTP) {
                 localStorage.setItem('userEmail', tempEmail);
                 localStorage.setItem('userMobile', tempMobile);
                 checkAuth();
-            } else { alert("Incorrect code."); }
+            } else {
+                alert("Incorrect OTP. Please check your email.");
+            }
         }
 
-        function logout() { localStorage.clear(); location.reload(); }
-        function goBack() { document.getElementById('infoStep').style.display = 'block'; document.getElementById('otpStep').style.display = 'none'; }
+        function logout() {
+            if(confirm("Log out? Your cart will be saved.")) {
+                localStorage.removeItem('userEmail');
+                localStorage.removeItem('userMobile');
+                location.reload();
+            }
+        }
 
-        // --- APP LOGIC ---
+        function goBack() {
+            document.getElementById('infoStep').style.display = 'block';
+            document.getElementById('otpStep').style.display = 'none';
+        }
+
+        // --- 3. MAIN APP LOGIC (Menu, Cart, Orders) ---
         let cart = JSON.parse(localStorage.getItem('userCart')) || [];
         let myOrderIds = JSON.parse(localStorage.getItem('myOrderIds')) || [];
         let notifiedOrders = JSON.parse(localStorage.getItem('notifiedOrders')) || [];
 
         function checkUpdates() {
+            if(!localStorage.getItem('userEmail')) return; 
+
             let status = localStorage.getItem('canteenStatus') || 'closed';
             if (status === 'open') {
-                document.getElementById('appWrapper').style.display = 'block';
+                document.getElementById('activeApp').style.display = 'block';
+                document.getElementById('cartArea').style.display = 'flex';
                 document.getElementById('closedScreen').style.display = 'none';
-                if (!document.querySelector('.qty-btn:active')) { loadMenu(); }
+                // Only reload menu if user isn't actively clicking buttons
+                if (!document.querySelector('.qty-btn:active')) {
+                    loadMenu(); 
+                }
             } else {
                 document.getElementById('activeApp').style.display = 'none';
+                document.getElementById('cartArea').style.display = 'none';
                 document.getElementById('closedScreen').style.display = 'block';
-                closeCart();
+                closeCart(); 
             }
 
+            // Check if any of MY orders have changed status
             let globalOrders = JSON.parse(localStorage.getItem('canteenOrders')) || [];
             globalOrders.forEach(order => {
                 if (myOrderIds.includes(order.id) && order.status === 'ready' && !notifiedOrders.includes(order.id + '_ready')) {
@@ -206,15 +257,17 @@
                     notifiedOrders.push(order.id + '_ready');
                     localStorage.setItem('notifiedOrders', JSON.stringify(notifiedOrders));
                 }
+                
                 if (myOrderIds.includes(order.id) && order.status === 'cancelled' && !notifiedOrders.includes(order.id + '_cancelled')) {
-                    document.getElementById('cancelMessage').innerText = `Order #${order.id} was cancelled.`;
+                    document.getElementById('cancelMessage').innerText = `Order #${order.id} was cancelled by the canteen.`;
                     document.getElementById('cancelModal').style.display = 'flex';
                     notifiedOrders.push(order.id + '_cancelled');
                     localStorage.setItem('notifiedOrders', JSON.stringify(notifiedOrders));
                 }
             });
         }
-
+        
+        // Auto-refresh logic every 2 seconds
         setInterval(checkUpdates, 2000);
 
         function updateCartUI() {
@@ -228,69 +281,163 @@
             const container = document.getElementById('menu-container');
             container.innerHTML = '';
             
+            if(menu.length === 0) {
+                container.innerHTML = '<p>The menu is currently empty.</p>';
+                return;
+            }
+
             menu.forEach(item => {
                 let cartItem = cart.find(c => c.name === item.name);
                 let currentQty = cartItem ? cartItem.quantity : 0;
-                let isUnlimited = (item.stock === null);
-                let hasLimit = (item.maxPerOrder !== null);
                 
-                let buttonHTML = (currentQty === 0) 
-                    ? `<button class="btn-add" onclick="changeQty('${item.name}', ${item.price}, 1, ${item.stock}, ${item.maxPerOrder})">Add to Cart</button>`
-                    : `<div class="qty-controls"><button class="qty-btn" onclick="changeQty('${item.name}', ${item.price}, -1, ${item.stock}, ${item.maxPerOrder})">-</button><span class="qty-display">${currentQty}</span><button class="qty-btn" onclick="changeQty('${item.name}', ${item.price}, 1, ${item.stock}, ${item.maxPerOrder})">+</button></div>`;
+                let isUnlimited = (item.stock === null || item.stock === undefined);
+                let stockWarning = (!isUnlimited && item.stock > 0 && item.stock <= 5) ? `Only ${item.stock} left!` : '';
+                
+                let hasLimit = (item.maxPerOrder !== null && item.maxPerOrder !== undefined);
+                let limitWarning = hasLimit ? `Max ${item.maxPerOrder} per order` : '';
+                
+                let buttonHTML = '';
+                if (!isUnlimited && item.stock <= 0) {
+                    buttonHTML = `<button class="btn-add btn-disabled" disabled>Out of Stock</button>`;
+                } else if (currentQty === 0) {
+                    let passStock = isUnlimited ? 'null' : item.stock;
+                    let passLimit = hasLimit ? item.maxPerOrder : 'null';
+                    buttonHTML = `<button class="btn-add" onclick="changeQty('${item.name}', ${item.price}, 1, ${passStock}, ${passLimit})">Add to Cart</button>`;
+                } else {
+                    let passStock = isUnlimited ? 'null' : item.stock;
+                    let passLimit = hasLimit ? item.maxPerOrder : 'null';
+                    buttonHTML = `
+                        <div class="qty-controls">
+                            <button class="qty-btn" onclick="changeQty('${item.name}', ${item.price}, -1, ${passStock}, ${passLimit})">-</button>
+                            <span class="qty-display">${currentQty}</span>
+                            <button class="qty-btn" onclick="changeQty('${item.name}', ${item.price}, 1, ${passStock}, ${passLimit})">+</button>
+                        </div>
+                    `;
+                }
 
-                if (!isUnlimited && item.stock <= 0) buttonHTML = `<button class="btn-add btn-disabled" disabled>Out of Stock</button>`;
-
-                container.innerHTML += `<div class="card"><h3>${item.name}</h3><p class="desc">${item.desc || ''}</p><p class="price">₹${item.price}</p><div class="stock-warning">${!isUnlimited && item.stock <= 5 && item.stock > 0 ? 'Only '+item.stock+' left!' : ''}</div><div class="limit-warning">${hasLimit ? 'Max '+item.maxPerOrder+'/order' : ''}</div>${buttonHTML}</div>`;
+                container.innerHTML += `
+                    <div class="card">
+                        <h3>${item.name}</h3>
+                        <p class="desc">${item.desc || ''}</p>
+                        <p class="price">₹${item.price}</p>
+                        <div class="stock-warning">${stockWarning}</div>
+                        <div class="limit-warning">${limitWarning}</div>
+                        ${buttonHTML}
+                    </div>
+                `;
             });
         }
 
-        function changeQty(name, price, delta, stock, limit) {
-            let idx = cart.findIndex(c => c.name === name);
-            let qty = idx > -1 ? cart[idx].quantity : 0;
-            if (delta > 0) {
-                if (stock !== null && qty >= stock) { alert("Stock limit reached."); return; }
-                if (limit !== null && qty >= limit) { alert("Order limit reached."); return; }
-                if (idx > -1) cart[idx].quantity++; else cart.push({name, price, quantity:1});
-            } else {
-                cart[idx].quantity--; if (cart[idx].quantity <= 0) cart.splice(idx, 1);
+        function changeQty(name, price, delta, stockLimit, maxLimit) {
+            let itemIndex = cart.findIndex(c => c.name === name);
+            let currentQty = itemIndex > -1 ? cart[itemIndex].quantity : 0;
+            
+            if (delta > 0 && stockLimit !== null && currentQty >= stockLimit) {
+                alert(`Sorry, we only have ${stockLimit} of those available right now.`);
+                return;
             }
-            updateCartUI(); loadMenu();
+
+            if (delta > 0 && maxLimit !== null && currentQty >= maxLimit) {
+                alert(`You can only order a maximum of ${maxLimit} ${name} per order.`);
+                return;
+            }
+
+            if (itemIndex > -1) {
+                cart[itemIndex].quantity += delta;
+                if (cart[itemIndex].quantity <= 0) {
+                    cart.splice(itemIndex, 1); 
+                }
+            } else if (delta > 0) {
+                cart.push({ name: name, price: price, quantity: 1 });
+            }
+            
+            updateCartUI();
+            loadMenu(); 
         }
 
         function openCart() {
-            const list = document.getElementById('cartItemsList'); list.innerHTML = '';
+            const cartList = document.getElementById('cartItemsList');
+            cartList.innerHTML = '';
             let total = 0;
-            cart.forEach((item, i) => {
-                let sub = item.price * item.quantity; total += sub;
-                list.innerHTML += `<div class="cart-item"><span><strong>${item.name} x ${item.quantity}</strong> - ₹${sub}</span><button class="remove-btn" onclick="removeItem(${i})">Remove</button></div>`;
-            });
+
+            if (cart.length === 0) {
+                cartList.innerHTML = '<p>Your cart is empty.</p>';
+            } else {
+                cart.forEach((item, index) => {
+                    let itemTotal = Number(item.price) * item.quantity;
+                    total += itemTotal;
+                    cartList.innerHTML += `
+                        <div class="cart-item">
+                            <span><strong>${item.name} x ${item.quantity}</strong> - ₹${itemTotal}</span>
+                            <button class="remove-btn" onclick="removeItem(${index})">Remove All</button>
+                        </div>
+                    `;
+                });
+            }
             document.getElementById('cartTotal').innerText = `Total: ₹${total}`;
             document.getElementById('cartModal').style.display = 'flex';
         }
 
-        function removeItem(i) { cart.splice(i, 1); updateCartUI(); openCart(); loadMenu(); }
+        function removeItem(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+            loadMenu(); 
+            openCart(); 
+        }
+
         function closeCart() { document.getElementById('cartModal').style.display = 'none'; }
         function closeReadyModal() { document.getElementById('readyModal').style.display = 'none'; }
         function closeCancelModal() { document.getElementById('cancelModal').style.display = 'none'; }
 
         function placeOrder() {
-            if (cart.length === 0) return;
+            if (cart.length === 0) { alert("Add items to your cart first!"); return; }
+            
+            // 1. Deduct stock locally from the live menu
             let menu = JSON.parse(localStorage.getItem('canteenMenu')) || [];
-            cart.forEach(c => {
-                let m = menu.find(i => i.name === c.name);
-                if (m && m.stock !== null) m.stock = Math.max(0, m.stock - c.quantity);
+            cart.forEach(cartItem => {
+                let menuItem = menu.find(m => m.name === cartItem.name);
+                if (menuItem && menuItem.stock !== null) {
+                    menuItem.stock -= cartItem.quantity;
+                    if (menuItem.stock < 0) menuItem.stock = 0; 
+                }
             });
             localStorage.setItem('canteenMenu', JSON.stringify(menu));
 
+            let pickup = document.getElementById('pickupTime').value.trim();
+            if (pickup === "") pickup = "ASAP";
+            
+            let total = cart.reduce((sum, item) => sum + (Number(item.price) * item.quantity), 0);
+            let orderId = Math.floor(Math.random() * 10000); 
+            
+            // 2. Add to global orders for the seller to see
             let orders = JSON.parse(localStorage.getItem('canteenOrders')) || [];
-            let orderId = Math.floor(1000 + Math.random() * 9000);
-            orders.push({ id: orderId, mobile: localStorage.getItem('userMobile'), items: [...cart], total: cart.reduce((s,i)=>s+(i.price*i.quantity),0), pickup: document.getElementById('pickupTime').value || "ASAP", timePlaced: new Date().toLocaleTimeString(), status: 'pending' });
+            orders.push({
+                id: orderId,
+                mobile: localStorage.getItem('userMobile'), 
+                items: JSON.parse(JSON.stringify(cart)), // Deep copy cart
+                total: total,
+                pickup: pickup,
+                timePlaced: new Date().toLocaleTimeString(),
+                status: 'pending' 
+            });
             localStorage.setItem('canteenOrders', JSON.stringify(orders));
-            myOrderIds.push(orderId); localStorage.setItem('myOrderIds', JSON.stringify(myOrderIds));
-            cart = []; updateCartUI(); closeCart(); loadMenu(); alert(`Order #${orderId} Placed!`);
+            
+            // 3. Track this order on this device
+            myOrderIds.push(orderId);
+            localStorage.setItem('myOrderIds', JSON.stringify(myOrderIds));
+
+            // 4. Reset cart
+            cart = []; 
+            updateCartUI();
+            loadMenu(); 
+            closeCart();
+            document.getElementById('pickupTime').value = '';
+            alert(`Order #${orderId} placed successfully!`);
         }
 
-        checkAuth(); updateCartUI();
+        // Initialize authentication check on load
+        checkAuth();
+        updateCartUI();
     </script>
 </body>
 </html>
