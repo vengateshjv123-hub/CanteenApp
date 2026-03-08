@@ -8,212 +8,679 @@
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f8f9fa; }
         .navbar { background-color: #059669; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .navbar h2 { margin: 0; font-size: 24px; }
+        
+        .controls { display: flex; align-items: center; gap: 15px; }
         .status-badge { padding: 8px 12px; border-radius: 6px; font-weight: bold; background: #fff; color: #059669; }
         .toggle-btn { padding: 10px 20px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .btn-start { background-color: #10b981; color: white; }
         .btn-stop { background-color: #ef4444; color: white; }
-        .logout-btn { background: transparent; color: white; border: 1px solid white; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-right: 10px; }
+        .logout-btn { background: transparent; color: white; border: 1px solid white; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-right: 10px; transition: 0.3s; }
+        .logout-btn:hover { background: rgba(255,255,255,0.2); }
+
         .tab-container { display: flex; justify-content: center; margin-top: 20px; border-bottom: 2px solid #e5e7eb; }
-        .tab { padding: 15px 30px; cursor: pointer; font-weight: bold; color: #6b7280; border-bottom: 3px solid transparent; }
+        .tab { padding: 15px 30px; cursor: pointer; font-weight: bold; color: #6b7280; border-bottom: 3px solid transparent; transition: 0.3s; }
+        .tab:hover { color: #059669; }
         .tab.active { color: #059669; border-bottom: 3px solid #059669; }
+
         .dashboard-container { padding: 30px; max-width: 900px; margin: 0 auto; }
         .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        .form-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #e5e7eb; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .form-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; margin-bottom: 20px; }
+        .form-card h3 { margin-top: 0; color: #1f2937; margin-bottom: 20px; border-bottom: 2px solid #f3f4f6; padding-bottom: 10px; }
+        
         .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .input-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #4b5563; }
         .input-group input, .input-group select { width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; box-sizing: border-box; }
-        .publish-btn { background-color: #059669; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; }
-        .delete-btn { background-color: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
-        .inline-input { width: 60px; padding: 4px; border: 1px solid #d1d5db; border-radius: 4px; text-align: center; }
+        
+        .publish-btn { background-color: #059669; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; font-size: 16px; margin-top: 5px; }
+        .quick-add-btn { background-color: #fef3c7; color: #d97706; border: 1px solid #fde68a; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; margin: 5px; }
+        .delete-btn { background-color: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        
+        .inline-input { width: 60px; padding: 4px 8px; border: 1px solid #d1d5db; border-radius: 4px; text-align: center; font-weight: bold; color: #1f2937; }
+        .inline-input:focus { outline: 2px solid #059669; border-color: transparent; }
+        .stock-input { width: 70px; }
+
         .list-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e5e7eb; padding: 15px 0; }
-        .order-card { padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 2px solid; }
+        
+        .order-card { padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 2px solid; transition: 0.3s; }
         .order-pending { background: #fffbeb; border-color: #fde68a; } 
         .order-ready { background: #ecfdf5; border-color: #6ee7b7; }   
-        .action-btn { padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        
+        .action-btn { padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px; transition: 0.2s; }
         .btn-mark-ready { background-color: #3b82f6; color: white; }
+        .btn-mark-ready:hover { background-color: #2563eb; }
         .btn-mark-complete { background-color: #10b981; color: white; }
+        .btn-mark-complete:hover { background-color: #059669; }
         .btn-cancel { background-color: #ef4444; color: white; }
+        .btn-cancel:hover { background-color: #dc2626; }
+
+        .history-card { background: #f9fafb; border: 1px solid #d1d5db; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
+        .history-header { display: flex; justify-content: space-between; font-weight: bold; color: #374151; margin-bottom: 10px; }
+        .history-revenue { color: #059669; font-size: 18px; }
+
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; }
+        .modal-content { background: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 500px; box-shadow: 0 10px 15px rgba(0,0,0,0.1); max-height: 80vh; overflow-y: auto; }
         .setup-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #e5e7eb; }
+        .setup-input { width: 100px; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; }
+
+        /* Admin Login Screen Styles */
         #adminLoginScreen { display: flex; height: 100vh; align-items: center; justify-content: center; background: #ecfdf5; }
         .login-card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 90%; max-width: 400px; text-align: center; border-top: 6px solid #059669; }
+        .login-input { width: 100%; padding: 15px; border: 2px solid #a7f3d0; border-radius: 8px; font-size: 18px; text-align: center; margin-bottom: 20px; box-sizing: border-box; }
+        .login-input:focus { outline: none; border-color: #059669; }
+        .login-btn { background-color: #059669; color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; font-size: 18px; transition: 0.3s; }
+        .login-btn:hover { background-color: #047857; }
+
+        /* NEW TAG STYLING */
         .cat-badge { font-size: 12px; background: #e5e7eb; padding: 2px 6px; border-radius: 4px; margin-left: 5px; color: #4b5563; }
-        .parcel-badge { font-size: 12px; background: #dbeafe; padding: 2px 6px; border-radius: 4px; color: #1e40af; }
+        .parcel-badge { font-size: 12px; background: #dbeafe; padding: 2px 6px; border-radius: 4px; color: #1e40af; margin-left: 5px; }
     </style>
 </head>
 <body>
+
     <div id="adminLoginScreen">
         <div class="login-card">
-            <h1>👨‍🍳</h1><h2>Seller Gateway</h2>
-            <input type="password" id="adminPwd" style="width:100%; padding:15px; margin-bottom:20px;" placeholder="Password">
-            <button class="publish-btn" onclick="loginAdmin()">Login</button>
+            <h1 style="margin-top: 0; font-size: 40px;">👨‍🍳</h1>
+            <h2 style="color: #065f46; margin-top: 0;">Seller Gateway</h2>
+            <p style="color: #6b7280; margin-bottom: 25px;">Enter your admin password to manage the canteen.</p>
+            <input type="password" id="adminPwd" class="login-input" placeholder="Enter Password" onkeypress="if(event.key === 'Enter') loginAdmin()">
+            <button class="login-btn" onclick="loginAdmin()">Login to Dashboard</button>
         </div>
     </div>
+
     <div id="dashboardWrapper" style="display: none;">
+        
         <div class="navbar">
-            <div style="display: flex; align-items: center;"><button class="logout-btn" onclick="logoutAdmin()">Logout</button><h2>👨‍🍳 Seller Dashboard</h2></div>
-            <div class="controls"><span class="status-badge" id="statusBadge">Checking...</span><button class="toggle-btn" id="toggleBtn" onclick="toggleCanteen()">Toggle</button></div>
+            <div style="display: flex; align-items: center;">
+                <button class="logout-btn" onclick="logoutAdmin()">Logout</button>
+                <h2>👨‍🍳 Seller Dashboard</h2>
+            </div>
+            <div class="controls">
+                <span class="status-badge" id="statusBadge">Status: Checking...</span>
+                <button class="toggle-btn" id="toggleBtn" onclick="toggleCanteen()">Toggle</button>
+            </div>
         </div>
+
         <div class="tab-container">
             <div class="tab active" onclick="switchTab('ordersTab')">Live Orders</div>
             <div class="tab" onclick="switchTab('completedTab')">Completed & History</div>
             <div class="tab" onclick="switchTab('menuTab')">Catalog & Inventory</div>
         </div>
+
         <div class="dashboard-container">
-            <div id="ordersTab" class="tab-content active"><div class="form-card"><h3>Live Tracking</h3><div id="ordersList"></div></div></div>
-            <div id="completedTab" class="tab-content">
-                <div class="form-card"><h3>Current Session</h3><h2>Total: ₹<span id="dailyTotal">0</span></h2><div id="completedList"></div></div>
-                <div class="form-card"><h3>History</h3><div id="historyList"></div><button class="btn-cancel" style="width:100%;" onclick="clearHistory()">🗑️ Clear History</button></div>
+            <div id="ordersTab" class="tab-content active">
+                <div class="form-card">
+                    <h3>Live Order Tracking</h3>
+                    <div id="ordersList"></div>
+                </div>
             </div>
+
+            <div id="completedTab" class="tab-content">
+                <div class="form-card">
+                    <h3>Today's Current Session</h3>
+                    <h2 style="color: #059669; margin-top: 0; border-bottom: 2px solid #e5e7eb; padding-bottom: 15px;">
+                        Current Revenue: ₹<span id="dailyTotal">0</span>
+                    </h2>
+                    <div id="completedList"></div>
+                </div>
+                <div class="form-card">
+                    <h3>Past 7 Sessions History</h3>
+                    <div id="historyList"></div>
+                    <button class="btn-cancel" style="width:100%; padding:12px; border-radius:6px; margin-top:20px; font-weight:bold; cursor:pointer; border:none;" onclick="clearHistory()">🗑️ Clear All 7-Day History</button>
+                </div>
+            </div>
+
             <div id="menuTab" class="tab-content">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                    <div class="form-card">
-                        <h3>Add Item</h3>
-                        <div class="input-group"><input type="text" id="itemName" placeholder="Item Name"></div>
-                        <div class="input-group"><input type="number" id="itemPrice" placeholder="Base Price (₹)"></div>
-                        <div class="input-group"><input type="number" id="itemMaxLimit" placeholder="Max Limit Per Order (Optional)"></div>
-                        <div class="input-group">
-                            <label>Category</label>
-                            <select id="itemCategory">
-                                <option value="Lunch">Lunch</option>
-                                <option value="Snacks">Snacks</option>
-                                <option value="Beverages">Beverages</option>
-                                <option value="Icecream">Icecream</option>
-                            </select>
+                    <div>
+                        <div class="form-card">
+                            <h3>Quick Add to Master Catalog</h3>
+                            <button class="quick-add-btn" onclick="quickAdd('Samosa', 15, 'Snacks', false)">+ Samosa (₹15)</button>
+                            <button class="quick-add-btn" onclick="quickAdd('Egg Puffs', 25, 'Snacks', false)">+ Egg Puffs (₹25)</button>
+                            <button class="quick-add-btn" onclick="quickAdd('Veg Puffs', 22, 'Snacks', false)">+ Veg Puffs (₹22)</button>
+                            <button class="quick-add-btn" onclick="quickAdd('Chicken Puffs', 30, 'Snacks', false)">+ Chicken Puffs (₹30)</button>
                         </div>
-                        <div class="input-group" style="display: flex; align-items: center; gap: 10px; background: #f9fafb; padding: 10px; border-radius: 6px;">
-                            <input type="checkbox" id="itemParcel" style="width: auto; cursor: pointer;"> 
-                            <label for="itemParcel" style="margin: 0; color: #1e3a8a; cursor: pointer;">Available for Parcel (+₹10)</label>
+
+                        <div class="form-card">
+                            <h3>Add Custom Item to Master</h3>
+                            <div class="input-group">
+                                <label>Item Name</label>
+                                <input type="text" id="itemName" placeholder="e.g., Full Meals">
+                            </div>
+                            <div class="input-group">
+                                <label>Price (₹)</label>
+                                <input type="number" id="itemPrice" placeholder="e.g., 80">
+                            </div>
+                            <div class="input-group">
+                                <label>Description (Optional)</label>
+                                <input type="text" id="itemDesc" placeholder="e.g., Includes rice, sambar...">
+                            </div>
+                            <div class="input-group">
+                                <label>Max Limit Per Order (Optional)</label>
+                                <input type="number" id="itemMaxLimit" placeholder="e.g., 5 (Leave blank for unlimited)">
+                            </div>
+                            
+                            <div class="input-group">
+                                <label>Category</label>
+                                <select id="itemCategory" style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; box-sizing: border-box;">
+                                    <option value="Lunch">Lunch</option>
+                                    <option value="Snacks">Snacks</option>
+                                    <option value="Beverages">Beverages</option>
+                                    <option value="Icecream">Icecream</option>
+                                </select>
+                            </div>
+
+                            <div class="input-group" style="display: flex; align-items: center; gap: 10px; background: #f9fafb; padding: 10px; border-radius: 6px; margin-bottom: 20px;">
+                                <input type="checkbox" id="itemParcel" style="width: auto; cursor: pointer;"> 
+                                <label for="itemParcel" style="margin: 0; color: #1e3a8a; cursor: pointer;">Available for Parcel (+₹10)</label>
+                            </div>
+
+                            <button class="publish-btn" onclick="publishItem()">Save to Master Catalog</button>
                         </div>
-                        <button class="publish-btn" onclick="publishItem()">Save to Catalog</button>
                     </div>
                     <div>
-                        <div class="form-card" id="liveInventoryCard" style="display:none; border: 2px solid #10b981;"><h3>🟢 Live Stock</h3><div id="liveInventoryList"></div></div>
-                        <div class="form-card"><h3>📚 Master Catalog</h3><div id="catalogList"></div></div>
+                        <div class="form-card" id="liveInventoryCard" style="display:none; border: 2px solid #10b981;">
+                            <h3 style="color:#059669;">🟢 Today's Live Inventory</h3>
+                            <p style="font-size:12px; color:#6b7280; margin-top:-10px;">Type directly in the boxes to edit. Blank means unlimited.</p>
+                            <div id="liveInventoryList"></div>
+                        </div>
+                        
+                        <div class="form-card">
+                            <h3>📚 Master Catalog</h3>
+                            <p style="font-size:12px; color:#6b7280; margin-top:-10px;">All items ever created. Type directly in the limit boxes to edit.</p>
+                            <div id="catalogList"></div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div id="startupModal" class="modal">
+    </div> <div id="startupModal" class="modal">
         <div class="modal-content">
-            <h2>Today's Menu Setup</h2>
-            <div id="startupList"></div>
-            <button class="publish-btn" onclick="confirmStartup()">Start Canteen</button>
+            <h2 style="margin-top:0;">Setup Today's Menu</h2>
+            <p style="color:#6b7280; font-size:14px;">Select items to sell today. <strong>Leave the typing box blank for unlimited daily stock.</strong></p>
+            <div id="startupList" style="margin-bottom: 20px;"></div>
+            <button class="publish-btn" onclick="confirmStartup()">Start Canteen Now</button>
+            <button class="action-btn btn-cancel" style="width:100%; margin-top:10px;" onclick="closeStartupModal()">Cancel</button>
         </div>
     </div>
+
     <script>
+        // ==========================================
+        // 🛑 CHANGE YOUR ADMIN PASSWORD HERE 🛑
         const ADMIN_PASSWORD = "admin123";
-        function loginAdmin() { if (document.getElementById('adminPwd').value === ADMIN_PASSWORD) { localStorage.setItem('sellerAuth', 'true'); checkAdminAuth(); } else alert("Denied."); }
-        function logoutAdmin() { localStorage.removeItem('sellerAuth'); checkAdminAuth(); }
+        // ==========================================
+
         function checkAdminAuth() {
-            if (localStorage.getItem('sellerAuth') === 'true') { document.getElementById('adminLoginScreen').style.display = 'none'; document.getElementById('dashboardWrapper').style.display = 'block'; loadStatus(); loadDashboard();
-            } else { document.getElementById('adminLoginScreen').style.display = 'flex'; document.getElementById('dashboardWrapper').style.display = 'none'; }
+            let isAuth = localStorage.getItem('sellerAuth');
+            if (isAuth === 'true') {
+                document.getElementById('adminLoginScreen').style.display = 'none';
+                document.getElementById('dashboardWrapper').style.display = 'block';
+                loadStatus();
+                loadDashboard();
+            } else {
+                document.getElementById('adminLoginScreen').style.display = 'flex';
+                document.getElementById('dashboardWrapper').style.display = 'none';
+            }
         }
+
+        function loginAdmin() {
+            let pwd = document.getElementById('adminPwd').value;
+            if (pwd === ADMIN_PASSWORD) {
+                localStorage.setItem('sellerAuth', 'true');
+                checkAdminAuth();
+            } else {
+                alert("Incorrect Password. Access Denied.");
+            }
+        }
+
+        function logoutAdmin() {
+            if(confirm("Securely log out of the dashboard?")) {
+                localStorage.removeItem('sellerAuth');
+                document.getElementById('adminPwd').value = '';
+                checkAdminAuth();
+            }
+        }
+
+        // --- Data Initialization ---
+        function initializeData() {
+            let master = JSON.parse(localStorage.getItem('masterMenu'));
+            if (!master) {
+                let oldMenu = JSON.parse(localStorage.getItem('canteenMenu')) || [];
+                // Defaults to Snacks and no parcel for old items migrating over
+                let newMaster = oldMenu.map(m => ({name: m.name, price: m.price, desc: m.desc, maxPerOrder: null, category: "Snacks", allowParcel: false}));
+                localStorage.setItem('masterMenu', JSON.stringify(newMaster));
+            }
+        }
+        initializeData();
+
         function loadStatus() {
             let status = localStorage.getItem('canteenStatus') || 'closed';
-            document.getElementById('statusBadge').innerText = "Status: " + status.toUpperCase();
-            document.getElementById('toggleBtn').innerText = status === 'open' ? "Stop Canteen" : "Start Canteen";
-            document.getElementById('liveInventoryCard').style.display = status === 'open' ? 'block' : 'none';
-        }
-        function toggleCanteen() {
-            if (localStorage.getItem('canteenStatus') !== 'open') {
-                let master = JSON.parse(localStorage.getItem('masterMenu')) || []; let html = '';
-                master.forEach((item, i) => { html += `<div class="setup-item"><label><input type="checkbox" id="check_${i}" checked> ${item.name}</label><input type="number" id="stock_${i}" placeholder="Stock (Blank=♾️)" style="width:100px;"></div>`; });
-                document.getElementById('startupList').innerHTML = html; document.getElementById('startupModal').style.display = 'flex';
-            } else { localStorage.setItem('canteenStatus', 'closed'); loadStatus(); loadDashboard(); }
-        }
-        function confirmStartup() {
-            let master = JSON.parse(localStorage.getItem('masterMenu')) || []; let today = [];
-            master.forEach((item, i) => {
-                if (document.getElementById(`check_${i}`).checked) { let s = document.getElementById(`stock_${i}`).value; today.push({ ...item, stock: s === '' ? null : parseInt(s) }); }
-            });
-            let oldComp = JSON.parse(localStorage.getItem('completedOrders')) || [];
-            if (oldComp.length > 0) {
-                let hist = JSON.parse(localStorage.getItem('canteenHistory')) || [];
-                hist.unshift({ sessionDate: new Date().toLocaleString(), revenue: oldComp.reduce((s,o)=>s+o.total,0), orderCount: oldComp.length });
-                if (hist.length > 7) hist.pop(); localStorage.setItem('canteenHistory', JSON.stringify(hist));
+            const badge = document.getElementById('statusBadge');
+            const btn = document.getElementById('toggleBtn');
+            
+            if (status === 'open') {
+                badge.innerText = "Status: OPEN";
+                badge.style.color = "#059669";
+                btn.innerText = "Stop Canteen";
+                btn.className = "toggle-btn btn-stop";
+                document.getElementById('liveInventoryCard').style.display = 'block';
+            } else {
+                badge.innerText = "Status: CLOSED";
+                badge.style.color = "#ef4444";
+                btn.innerText = "Start Canteen";
+                btn.className = "toggle-btn btn-start";
+                document.getElementById('liveInventoryCard').style.display = 'none';
             }
-            localStorage.setItem('canteenMenu', JSON.stringify(today)); localStorage.setItem('canteenOrders', JSON.stringify([])); localStorage.setItem('completedOrders', JSON.stringify([])); localStorage.setItem('canteenStatus', 'open');
-            document.getElementById('startupModal').style.display = 'none'; loadStatus(); loadDashboard();
         }
-        function switchTab(id) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active')); document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            event.target.classList.add('active'); document.getElementById(id).classList.add('active');
-        }
-        function loadDashboard() {
-            let master = JSON.parse(localStorage.getItem('masterMenu')) || [];
-            const cat = document.getElementById('catalogList'); cat.innerHTML = '';
-            master.forEach((item, i) => {
-                let parcelTag = item.allowParcel ? `<span class="parcel-badge">📦 Parcel</span>` : '';
-                cat.innerHTML += `<div class="list-item"><div><strong>${item.name}</strong> <span class="cat-badge">${item.category || 'Snacks'}</span> ${parcelTag}<br><span style="color:#059669; font-weight:bold;">₹${item.price}</span></div><div style="display:flex; flex-direction:column; gap:5px;"><label>Limit: <input type="number" class="inline-input" value="${item.maxPerOrder || ''}" onchange="updateMasterLimit(${i}, this.value)"></label><button class="delete-btn" onclick="deleteFromMaster(${i})">Delete</button></div></div>`;
-            });
-            if (localStorage.getItem('canteenStatus') === 'open') {
-                let live = JSON.parse(localStorage.getItem('canteenMenu')) || [];
-                const lList = document.getElementById('liveInventoryList'); lList.innerHTML = '';
-                live.forEach((item, i) => { lList.innerHTML += `<div class="list-item"><div><strong>${item.name}</strong></div><div style="display:flex; flex-direction:column; gap:5px;"><label>Limit: <input type="number" class="inline-input" value="${item.maxPerOrder || ''}" onchange="updateLiveLimit(${i}, this.value)"></label><label>Stock: <input type="number" class="inline-input" value="${item.stock === null ? '' : item.stock}" ${item.stock === null ? 'disabled placeholder="♾️"' : ''} onchange="updateLiveStock(${i}, this.value)"></label></div></div>`; });
-            }
-            let orders = JSON.parse(localStorage.getItem('canteenOrders')) || [];
-            const oList = document.getElementById('ordersList'); oList.innerHTML = '';
-            orders.filter(o => o.status !== 'cancelled').forEach((o, i) => {
-                let act = o.status === 'pending' ? `<div style="display:flex; gap:10px;"><button class="action-btn btn-mark-ready" style="flex:2;" onclick="updateOrderStatus(${o.id}, 'ready')">Mark Ready</button><button class="action-btn btn-cancel" style="flex:1;" onclick="cancelOrder(${o.id})">Cancel</button></div>` : `<div style="display:flex; gap:10px;"><button class="action-btn btn-mark-complete" style="flex:2;" onclick="completeOrder(${o.id})">Complete</button><button class="action-btn btn-cancel" style="flex:1;" onclick="cancelOrder(${o.id})">Cancel</button></div>`;
-                oList.innerHTML += `<div class="order-card ${o.status === 'pending' ? 'order-pending' : 'order-ready'}"><strong>Order #${o.id}</strong><br>📞 ${o.mobile}<br>Items: ${o.items.map(it=>it.name+' x '+it.quantity).join(', ')}<br>Total: ₹${o.total}<br>${act}</div>`;
-            });
-            let comp = JSON.parse(localStorage.getItem('completedOrders')) || [];
-            const cList = document.getElementById('completedList'); cList.innerHTML = '';
-            comp.forEach(o => { cList.innerHTML += `<div class="order-card" style="background:#f3f4f6;">Order #${o.id} - ₹${o.total}<br>📞 ${o.mobile}</div>`; });
-            document.getElementById('dailyTotal').innerText = comp.reduce((s,o)=>s+o.total,0);
-            let hist = JSON.parse(localStorage.getItem('canteenHistory')) || [];
-            const hList = document.getElementById('historyList'); hList.innerHTML = '';
-            hist.forEach(h => { hList.innerHTML += `<div class="order-card" style="border-color:#d1d5db;">🗓️ ${h.sessionDate}<br>Revenue: ₹${h.revenue}</div>`; });
-        }
-        function updateMasterLimit(i, v) { let m = JSON.parse(localStorage.getItem('masterMenu')); m[i].maxPerOrder = v === '' ? null : parseInt(v); localStorage.setItem('masterMenu', JSON.stringify(m)); loadDashboard(); }
-        function updateLiveLimit(i, v) { let l = JSON.parse(localStorage.getItem('canteenMenu')); l[i].maxPerOrder = v === '' ? null : parseInt(v); localStorage.setItem('canteenMenu', JSON.stringify(l)); loadDashboard(); }
-        function updateLiveStock(i, v) { let l = JSON.parse(localStorage.getItem('canteenMenu')); l[i].stock = v === '' ? 0 : parseInt(v); localStorage.setItem('canteenMenu', JSON.stringify(l)); loadDashboard(); }
-        function deleteFromMaster(i) { let m = JSON.parse(localStorage.getItem('masterMenu')); m.splice(i, 1); localStorage.setItem('masterMenu', JSON.stringify(m)); loadDashboard(); }
-        function clearHistory() { localStorage.setItem('canteenHistory', JSON.stringify([])); loadDashboard(); }
-        function updateOrderStatus(id, status) { let o = JSON.parse(localStorage.getItem('canteenOrders')); o.find(x => x.id === id).status = status; localStorage.setItem('canteenOrders', JSON.stringify(o)); loadDashboard(); }
-        
-        function cancelOrder(id) {
-            let orders = JSON.parse(localStorage.getItem('canteenOrders'));
-            let menu = JSON.parse(localStorage.getItem('canteenMenu'));
-            let order = orders.find(x => x.id === id);
-            // Deduct stock using baseName so parcels return correctly
-            order.items.forEach(c => { let itemName = c.baseName ? c.baseName : c.name; let m = menu.find(i => i.name === itemName); if(m && m.stock !== null) m.stock += c.quantity; });
-            order.status = 'cancelled';
-            localStorage.setItem('canteenOrders', JSON.stringify(orders)); localStorage.setItem('canteenMenu', JSON.stringify(menu)); loadDashboard();
-        }
-        function completeOrder(id) {
-            let o = JSON.parse(localStorage.getItem('canteenOrders')); let comp = JSON.parse(localStorage.getItem('completedOrders')) || [];
-            let idx = o.findIndex(x => x.id === id); comp.push(o.splice(idx, 1)[0]);
-            localStorage.setItem('canteenOrders', JSON.stringify(o)); localStorage.setItem('completedOrders', JSON.stringify(comp)); loadDashboard();
-        }
-        function publishItem() {
-            let itemName = document.getElementById('itemName').value;
-            let itemPrice = document.getElementById('itemPrice').value;
-            if(!itemName || !itemPrice) { alert("Please enter name and price."); return; }
 
+        function toggleCanteen() {
+            let status = localStorage.getItem('canteenStatus') || 'closed';
+            if (status === 'closed') {
+                if(confirm("Start a new session? Yesterday's orders will be archived to History.")) {
+                    openStartupModal();
+                }
+            } else {
+                localStorage.setItem('canteenStatus', 'closed');
+                loadStatus();
+                loadDashboard();
+            }
+        }
+
+        function openStartupModal() {
             let master = JSON.parse(localStorage.getItem('masterMenu')) || [];
-            let cat = document.getElementById('itemCategory').value;
-            let parcel = document.getElementById('itemParcel').checked;
+            let listHTML = '';
+            if (master.length === 0) {
+                listHTML = '<p style="color:#ef4444;">Your Master Catalog is empty! Add items in the Menu tab first.</p>';
+            } else {
+                master.forEach((item, i) => {
+                    let limitText = item.maxPerOrder ? `(Max ${item.maxPerOrder}/order)` : '';
+                    listHTML += `
+                        <div class="setup-item">
+                            <label style="font-weight:bold; cursor:pointer;">
+                                <input type="checkbox" id="check_${i}" checked> ${item.name} (₹${item.price}) <span style="color:#d97706;font-size:12px;">${limitText}</span>
+                            </label>
+                            <input type="number" id="stock_${i}" class="setup-input" placeholder="Stock (Blank=♾️)">
+                        </div>
+                    `;
+                });
+            }
+            document.getElementById('startupList').innerHTML = listHTML;
+            document.getElementById('startupModal').style.display = 'flex';
+        }
+
+        function closeStartupModal() { document.getElementById('startupModal').style.display = 'none'; }
+
+        function confirmStartup() {
+            let master = JSON.parse(localStorage.getItem('masterMenu')) || [];
+            let todayMenu = [];
             
-            master.push({ 
-                name: itemName, 
-                price: parseInt(itemPrice), 
-                maxPerOrder: document.getElementById('itemMaxLimit').value ? parseInt(document.getElementById('itemMaxLimit').value) : null,
-                category: cat,
-                allowParcel: parcel
+            master.forEach((item, i) => {
+                let isChecked = document.getElementById(`check_${i}`).checked;
+                if (isChecked) {
+                    let stockVal = document.getElementById(`stock_${i}`).value.trim();
+                    todayMenu.push({
+                        name: item.name,
+                        price: item.price,
+                        desc: item.desc,
+                        category: item.category || "Snacks",
+                        allowParcel: item.allowParcel || false,
+                        maxPerOrder: item.maxPerOrder || null, 
+                        stock: stockVal === '' ? null : parseInt(stockVal) 
+                    });
+                }
             });
-            localStorage.setItem('masterMenu', JSON.stringify(master)); 
+
+            if(todayMenu.length === 0) {
+                alert("You must select at least one item to start the canteen.");
+                return;
+            }
+
+            let oldCompleted = JSON.parse(localStorage.getItem('completedOrders')) || [];
+            if (oldCompleted.length > 0) {
+                let oldTotal = oldCompleted.reduce((sum, order) => sum + Number(order.total), 0);
+                let history = JSON.parse(localStorage.getItem('canteenHistory')) || [];
+                history.unshift({ sessionDate: new Date().toLocaleString(), revenue: oldTotal, orderCount: oldCompleted.length, orders: oldCompleted });
+                if (history.length > 7) history.pop(); 
+                localStorage.setItem('canteenHistory', JSON.stringify(history));
+            }
+
+            localStorage.setItem('canteenMenu', JSON.stringify(todayMenu));
+            localStorage.setItem('canteenOrders', JSON.stringify([]));
+            localStorage.setItem('completedOrders', JSON.stringify([]));
+            localStorage.setItem('canteenStatus', 'open');
             
-            // Clear inputs
-            document.getElementById('itemName').value = ''; document.getElementById('itemPrice').value = ''; document.getElementById('itemMaxLimit').value = ''; document.getElementById('itemParcel').checked = false;
+            closeStartupModal();
+            loadStatus();
             loadDashboard();
         }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        function loadDashboard() {
+            // LOAD MASTER CATALOG
+            let master = JSON.parse(localStorage.getItem('masterMenu')) || [];
+            const catalogList = document.getElementById('catalogList');
+            catalogList.innerHTML = '';
+            master.forEach((item, index) => {
+                let limitVal = item.maxPerOrder !== null ? item.maxPerOrder : '';
+                let parcelTag = item.allowParcel ? `<span class="parcel-badge">📦 Parcel Option</span>` : '';
+                let catTag = `<span class="cat-badge">${item.category || 'Snacks'}</span>`;
+
+                catalogList.innerHTML += `
+                    <div class="list-item">
+                        <div>
+                            <strong>${item.name}</strong> - ₹${item.price}
+                            <div style="margin-top: 5px;">${catTag} ${parcelTag}</div>
+                            <div style="font-size:12px; color:#6b7280; margin-top:2px;">${item.desc || ''}</div>
+                        </div>
+                        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px;">
+                            <label style="font-size:12px; font-weight:bold; color:#d97706;">🛒 Limit: 
+                                <input type="number" class="inline-input" placeholder="None" value="${limitVal}" onchange="updateMasterLimit(${index}, this.value)">
+                            </label>
+                            <button class="delete-btn" onclick="deleteFromMaster(${index})">Delete Item</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // LOAD LIVE INVENTORY
+            if (localStorage.getItem('canteenStatus') === 'open') {
+                let liveMenu = JSON.parse(localStorage.getItem('canteenMenu')) || [];
+                const liveList = document.getElementById('liveInventoryList');
+                liveList.innerHTML = '';
+                liveMenu.forEach((item, index) => {
+                    let stockColor = (item.stock === null || item.stock > 5) ? '#059669' : '#ef4444';
+                    let limitVal = item.maxPerOrder !== null ? item.maxPerOrder : '';
+                    let stockDisplay = item.stock === null ? 'disabled placeholder="♾️"' : `value="${item.stock}"`;
+
+                    liveList.innerHTML += `
+                        <div class="list-item">
+                            <div>
+                                <strong>${item.name}</strong>
+                                <div style="font-size:12px; color:#6b7280; margin-top:2px;">₹${item.price}</div>
+                            </div>
+                            <div style="display:flex; flex-direction:column; gap:8px; align-items:flex-end;">
+                                <label style="font-size:12px; font-weight:bold; color:#d97706;">🛒 Limit: 
+                                    <input type="number" class="inline-input" placeholder="None" value="${limitVal}" onchange="updateLiveLimit(${index}, this.value)">
+                                </label>
+                                <label style="font-size:14px; font-weight:bold; color:${stockColor};">📦 Stock: 
+                                    <input type="number" class="inline-input stock-input" ${stockDisplay} onchange="updateLiveStock(${index}, this.value)">
+                                </label>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            // LOAD LIVE ORDERS
+            let orders = JSON.parse(localStorage.getItem('canteenOrders')) || [];
+            const ordersList = document.getElementById('ordersList');
+            ordersList.innerHTML = '';
+            
+            let hasActiveOrders = orders.some(o => o.status === 'pending' || o.status === 'ready');
+            if (!hasActiveOrders) {
+                ordersList.innerHTML = '<p style="color:#6b7280;">No pending orders.</p>';
+            } else {
+                orders.forEach((order, index) => {
+                    if (order.status === 'cancelled') return;
+
+                    let itemNames = order.items.map(i => i.quantity > 1 ? `${i.name} x ${i.quantity}` : i.name).join(', ');
+                    let actionDivision = "";
+                    let cardClass = order.status === 'pending' ? 'order-pending' : 'order-ready';
+                    let customerMobile = order.mobile ? `<div style="font-size: 14px; color: #4b5563; margin-bottom: 8px;">📞 <strong>${order.mobile}</strong></div>` : '';
+
+                    if (order.status === 'pending') {
+                        actionDivision = `
+                            <div style="display: flex; gap: 10px;">
+                                <button class="action-btn btn-mark-ready" style="flex: 2;" onclick="markReady(${index})">🔔 Mark Ready</button>
+                                <button class="action-btn btn-cancel" style="flex: 1;" onclick="cancelOrder(${index})">❌ Cancel</button>
+                            </div>
+                        `;
+                    } else if (order.status === 'ready') {
+                        actionDivision = `
+                            <div style="color: #059669; font-weight: bold; margin-bottom: 10px; text-align: center;">✅ Customer Notified</div>
+                            <div style="display: flex; gap: 10px;">
+                                <button class="action-btn btn-mark-complete" style="flex: 2;" onclick="completeOrder(${index})">✔️ Mark Completed</button>
+                                <button class="action-btn btn-cancel" style="flex: 1;" onclick="cancelOrder(${index})">❌ Cancel</button>
+                            </div>
+                        `;
+                    }
+
+                    ordersList.innerHTML += `
+                        <div class="order-card ${cardClass}">
+                            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #d1d5db; padding-bottom: 10px; margin-bottom: 10px;">
+                                <strong>Order #${order.id}</strong>
+                                <span style="color:#6b7280; font-size:14px;">Placed: ${order.timePlaced}</span>
+                            </div>
+                            ${customerMobile}
+                            Items: <strong>${itemNames}</strong><br>
+                            <span style="color:#d97706; font-weight:bold;">Pickup Time: ${order.pickup}</span><br>
+                            <span style="color:#059669; font-weight:bold; font-size:18px;">Total: ₹${order.total}</span>
+                            <div style="margin-top: 15px;">${actionDivision}</div>
+                        </div>
+                    `;
+                });
+            }
+
+            // LOAD COMPLETED ORDERS
+            let completed = JSON.parse(localStorage.getItem('completedOrders')) || [];
+            const completedList = document.getElementById('completedList');
+            completedList.innerHTML = '';
+            let dailyTotal = 0;
+
+            if (completed.length === 0) {
+                completedList.innerHTML = '<p style="color:#6b7280;">No completed orders for this session.</p>';
+            } else {
+                completed.forEach(order => {
+                    let itemNames = order.items.map(i => i.quantity > 1 ? `${i.name} x ${i.quantity}` : i.name).join(', ');
+                    dailyTotal += Number(order.total);
+                    let customerMobile = order.mobile ? `<span style="font-size:13px; color:#4b5563;">📞 ${order.mobile}</span><br>` : '';
+
+                    completedList.innerHTML += `
+                        <div class="order-card" style="background:#f3f4f6; border-color:#d1d5db; color:#4b5563; padding: 10px;">
+                            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #d1d5db; padding-bottom: 5px; margin-bottom: 5px;">
+                                <strong>Order #${order.id}</strong><span style="font-size:14px;">${order.timePlaced}</span>
+                            </div>
+                            ${customerMobile}
+                            Items: ${itemNames}<br><span style="color:#059669; font-weight:bold;">Total: ₹${order.total}</span>
+                        </div>
+                    `;
+                });
+            }
+            document.getElementById('dailyTotal').innerText = dailyTotal;
+
+            // LOAD HISTORY
+            let history = JSON.parse(localStorage.getItem('canteenHistory')) || [];
+            const historyList = document.getElementById('historyList');
+            historyList.innerHTML = '';
+            if (history.length === 0) {
+                historyList.innerHTML = '<p style="color:#6b7280;">No history available yet.</p>';
+            } else {
+                history.forEach(log => {
+                    historyList.innerHTML += `
+                        <div class="history-card">
+                            <div class="history-header">
+                                <span>🗓️ Session: ${log.sessionDate}</span><span class="history-revenue">₹${log.revenue}</span>
+                            </div>
+                            <div style="font-size: 14px; color: #4b5563;">Orders Completed: <strong>${log.orderCount}</strong></div>
+                        </div>
+                    `;
+                });
+            }
+        }
+
+        function updateMasterLimit(index, value) {
+            let master = JSON.parse(localStorage.getItem('masterMenu')) || [];
+            master[index].maxPerOrder = value.trim() === '' ? null : parseInt(value);
+            localStorage.setItem('masterMenu', JSON.stringify(master));
+            
+            if (localStorage.getItem('canteenStatus') === 'open') {
+                let live = JSON.parse(localStorage.getItem('canteenMenu')) || [];
+                let liveIndex = live.findIndex(m => m.name === master[index].name);
+                if (liveIndex > -1) {
+                    live[liveIndex].maxPerOrder = master[index].maxPerOrder;
+                    localStorage.setItem('canteenMenu', JSON.stringify(live));
+                }
+            }
+            loadDashboard();
+        }
+
+        function updateLiveLimit(index, value) {
+            let live = JSON.parse(localStorage.getItem('canteenMenu')) || [];
+            live[index].maxPerOrder = value.trim() === '' ? null : parseInt(value);
+            localStorage.setItem('canteenMenu', JSON.stringify(live));
+            
+            let master = JSON.parse(localStorage.getItem('masterMenu')) || [];
+            let masterIndex = master.findIndex(m => m.name === live[index].name);
+            if (masterIndex > -1) {
+                master[masterIndex].maxPerOrder = live[index].maxPerOrder;
+                localStorage.setItem('masterMenu', JSON.stringify(master));
+            }
+            loadDashboard();
+        }
+
+        function updateLiveStock(index, value) {
+            let live = JSON.parse(localStorage.getItem('canteenMenu')) || [];
+            if (live[index].stock === null) return; 
+            let newStock = value.trim() === '' ? 0 : parseInt(value);
+            live[index].stock = newStock < 0 ? 0 : newStock;
+            localStorage.setItem('canteenMenu', JSON.stringify(live));
+            loadDashboard();
+        }
+
+        function clearHistory() {
+            if(confirm("🛑 WARNING: Are you sure you want to permanently delete all 7-day history? This cannot be undone!")) {
+                localStorage.setItem('canteenHistory', JSON.stringify([]));
+                loadDashboard();
+            }
+        }
+
+        function markReady(index) {
+            let orders = JSON.parse(localStorage.getItem('canteenOrders')) || [];
+            orders[index].status = 'ready'; 
+            localStorage.setItem('canteenOrders', JSON.stringify(orders));
+            loadDashboard();
+        }
+
+        function completeOrder(index) {
+            let orders = JSON.parse(localStorage.getItem('canteenOrders')) || [];
+            let completed = JSON.parse(localStorage.getItem('completedOrders')) || [];
+            let finishedOrder = orders.splice(index, 1)[0]; 
+            finishedOrder.status = 'completed';
+            completed.push(finishedOrder); 
+            localStorage.setItem('canteenOrders', JSON.stringify(orders));
+            localStorage.setItem('completedOrders', JSON.stringify(completed));
+            loadDashboard();
+        }
+
+        function cancelOrder(index) {
+            if(confirm("Cancel this order? Stock will be returned to inventory if applicable.")) {
+                let orders = JSON.parse(localStorage.getItem('canteenOrders')) || [];
+                let menu = JSON.parse(localStorage.getItem('canteenMenu')) || [];
+                let canceledOrder = orders[index];
+
+                canceledOrder.items.forEach(cartItem => {
+                    // NEW: Uses baseName so Parcel items correctly return stock to the original item
+                    let itemName = cartItem.baseName ? cartItem.baseName : cartItem.name;
+                    let menuItem = menu.find(m => m.name === itemName);
+                    if (menuItem && menuItem.stock !== null) {
+                        menuItem.stock += cartItem.quantity;
+                    }
+                });
+
+                orders[index].status = 'cancelled';
+                localStorage.setItem('canteenMenu', JSON.stringify(menu));
+                localStorage.setItem('canteenOrders', JSON.stringify(orders));
+                loadDashboard();
+            }
+        }
+
+        // Updated to include defaults for category and parcel
+        function quickAdd(name, price, category, allowParcel) {
+            let master = JSON.parse(localStorage.getItem('masterMenu')) || [];
+            master.push({ name: name, price: price, desc: '', maxPerOrder: null, category: category, allowParcel: allowParcel });
+            localStorage.setItem('masterMenu', JSON.stringify(master));
+            
+            if(localStorage.getItem('canteenStatus') === 'open') {
+                let live = JSON.parse(localStorage.getItem('canteenMenu')) || [];
+                live.push({ name: name, price: price, desc: '', stock: null, maxPerOrder: null, category: category, allowParcel: allowParcel });
+                localStorage.setItem('canteenMenu', JSON.stringify(live));
+            }
+            loadDashboard();
+        }
+
+        function publishItem() {
+            const name = document.getElementById('itemName').value;
+            const price = document.getElementById('itemPrice').value;
+            const desc = document.getElementById('itemDesc').value;
+            const maxLimit = document.getElementById('itemMaxLimit').value.trim();
+            const cat = document.getElementById('itemCategory').value;
+            const parcel = document.getElementById('itemParcel').checked;
+            
+            if(name !== '' && price !== '') {
+                let master = JSON.parse(localStorage.getItem('masterMenu')) || [];
+                let parsedLimit = maxLimit === '' ? null : parseInt(maxLimit);
+
+                master.push({ 
+                    name: name, 
+                    price: parseInt(price), 
+                    desc: desc, 
+                    maxPerOrder: parsedLimit,
+                    category: cat,
+                    allowParcel: parcel
+                });
+                localStorage.setItem('masterMenu', JSON.stringify(master));
+                
+                if(localStorage.getItem('canteenStatus') === 'open') {
+                    let live = JSON.parse(localStorage.getItem('canteenMenu')) || [];
+                    live.push({ 
+                        name: name, 
+                        price: parseInt(price), 
+                        desc: desc, 
+                        stock: null, 
+                        maxPerOrder: parsedLimit,
+                        category: cat,
+                        allowParcel: parcel
+                    });
+                    localStorage.setItem('canteenMenu', JSON.stringify(live));
+                }
+
+                document.getElementById('itemName').value = '';
+                document.getElementById('itemPrice').value = '';
+                document.getElementById('itemDesc').value = '';
+                document.getElementById('itemMaxLimit').value = '';
+                document.getElementById('itemParcel').checked = false;
+                loadDashboard();
+            } else {
+                alert('Please enter Name and Price.');
+            }
+        }
+
+        function deleteFromMaster(index) {
+            if(confirm("Delete this from your Master Catalog?")) {
+                let master = JSON.parse(localStorage.getItem('masterMenu')) || [];
+                master.splice(index, 1);
+                localStorage.setItem('masterMenu', JSON.stringify(master));
+                loadDashboard();
+            }
+        }
+
+        // Initialize Authentication on Page Load
         checkAdminAuth();
-        setInterval(() => { if (localStorage.getItem('sellerAuth') === 'true' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'SELECT') loadDashboard(); }, 2000);
+
+        // Safe Dashboard Auto-Refresh (ignores if user is typing or selecting a dropdown)
+        setInterval(() => {
+            if (localStorage.getItem('sellerAuth') === 'true' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'SELECT') {
+                loadDashboard();
+            }
+        }, 2000); 
     </script>
 </body>
 </html>
