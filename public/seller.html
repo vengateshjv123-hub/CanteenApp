@@ -9,7 +9,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <style>
-        /* ORIGINAL UI STYLING - 100% RESTORED AND EXPANDED */
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             margin: 0; 
@@ -289,23 +288,15 @@
             border-radius: 4px; 
             color: #4b5563; 
         }
-
-        .parcel-badge { 
-            font-size: 12px; 
-            background: #dbeafe; 
-            padding: 2px 6px; 
-            border-radius: 4px; 
-            color: #1e40af; 
-            margin-left: 5px; 
-        }
     </style>
 </head>
 <body>
+    
     <div id="adminLoginScreen">
         <div class="login-card">
             <h1 style="margin-top: 0; font-size: 40px;">👨‍🍳</h1>
             <h2 style="color: #065f46; margin-top: 0;">Seller Gateway</h2>
-            <input type="password" id="adminPwd" style="width:100%; padding:15px; margin-bottom:20px; text-align:center; border: 2px solid #a7f3d0; border-radius:8px;" placeholder="Password">
+            <input type="password" id="adminPwd" style="width:100%; padding:15px; margin-bottom:20px; text-align:center; border: 2px solid #a7f3d0; border-radius:8px; font-size: 18px;" placeholder="Password">
             <button class="publish-btn" style="padding:15px;" onclick="loginAdmin()">Login to Dashboard</button>
         </div>
     </div>
@@ -385,7 +376,7 @@
                     </div>
                     <div>
                         <div class="form-card" id="liveInventoryCard" style="display:none; border: 2px solid #10b981;">
-                            <h3>🟢 Today's Live Stock</h3>
+                            <h3>🟢 Today's Live Stock & Limits</h3>
                             <div id="liveInventoryList"></div>
                         </div>
                         <div class="form-card">
@@ -408,7 +399,6 @@
     </div>
 
     <script>
-        // --- FIREBASE CLOUD SETUP ---
         const firebaseConfig = { 
             databaseURL: "https://quickbite-canteen-default-rtdb.firebaseio.com/" 
         };
@@ -416,7 +406,6 @@
         const db = firebase.database();
         const ADMIN_PASSWORD = "admin123";
 
-        // --- MIGRATION ENGINE ---
         function migrateLocalData() {
             let oldMaster = JSON.parse(localStorage.getItem('masterMenu'));
             if (oldMaster && oldMaster.length > 0) {
@@ -436,7 +425,6 @@
             }
         }
 
-        // --- AUTHENTICATION ---
         function checkAdminAuth() {
             if (localStorage.getItem('sellerAuth') === 'true') {
                 document.getElementById('adminLoginScreen').style.display = 'none';
@@ -453,7 +441,7 @@
                 localStorage.setItem('sellerAuth', 'true'); 
                 checkAdminAuth(); 
             } else {
-                alert("Access Denied."); 
+                alert("Access Denied. Incorrect Password."); 
             }
         }
 
@@ -469,9 +457,7 @@
             document.getElementById(tabId).classList.add('active');
         }
 
-        // --- REAL-TIME CLOUD SYNC ---
         function syncFirebase() {
-            // Canteen Status
             db.ref('canteenStatus').on('value', snap => {
                 let status = snap.val() || 'closed';
                 document.getElementById('statusBadge').innerText = "Status: " + status.toUpperCase();
@@ -480,7 +466,6 @@
                 document.getElementById('liveInventoryCard').style.display = status === 'open' ? 'block' : 'none';
             });
 
-            // Master Menu
             db.ref('masterMenu').on('value', snap => {
                 const catalog = document.getElementById('catalogList'); 
                 catalog.innerHTML = '';
@@ -491,7 +476,7 @@
                     catalog.innerHTML += `
                         <div class="list-item">
                             <div>
-                                <strong>${item.name}</strong> - ₹${item.price}<br>
+                                <strong style="font-size: 16px;">${item.name}</strong> - ₹${item.price}<br>
                                 <span class="cat-badge">${item.category}</span>
                             </div>
                             <button class="delete-btn" onclick="db.ref('masterMenu/${key}').remove()">Delete</button>
@@ -499,7 +484,6 @@
                 });
             });
 
-            // Quick Add Buttons
             db.ref('quickAddItems').on('value', snap => {
                 const container = document.getElementById('quickAddContainer'); 
                 container.innerHTML = '';
@@ -515,7 +499,7 @@
                 });
             });
 
-            // Live Inventory
+            // INVENTORY AND PER-ORDER LIMIT EDITORS
             db.ref('canteenMenu').on('value', snap => {
                 const live = document.getElementById('liveInventoryList'); 
                 live.innerHTML = '';
@@ -523,15 +507,32 @@
                 
                 Object.keys(data).forEach(key => {
                     let item = data[key];
+                    
                     live.innerHTML += `
-                        <div class="list-item">
-                            <div><strong>${item.name}</strong></div>
-                            <input type="number" class="inline-input" value="${item.stock || 0}" onchange="db.ref('canteenMenu/${key}/stock').set(parseInt(this.value))">
+                        <div class="list-item" style="background: #ecfdf5; padding: 12px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #a7f3d0; display: flex; flex-direction: column; align-items: stretch; gap: 10px;">
+                            <div style="display:flex; justify-content: space-between; width: 100%;">
+                                <strong style="font-size: 18px; color: #064e3b;">${item.name}</strong>
+                            </div>
+                            <div style="display:flex; justify-content: space-between; width: 100%; gap:10px;">
+                                <div style="display:flex; align-items:center; gap:8px; flex:1;">
+                                    <label style="font-size:11px; font-weight:bold; color:#059669; text-transform: uppercase;">Total Stock:</label>
+                                    <input type="number" 
+                                        style="width: 100%; padding: 6px; border: 2px solid #059669; border-radius: 6px; font-weight: bold; text-align: center;" 
+                                        value="${item.stock || 0}" 
+                                        onchange="db.ref('canteenMenu/${key}/stock').set(parseInt(this.value))">
+                                </div>
+                                <div style="display:flex; align-items:center; gap:8px; flex:1;">
+                                    <label style="font-size:11px; font-weight:bold; color:#d97706; text-transform: uppercase;">Max Per Order:</label>
+                                    <input type="number" 
+                                        style="width: 100%; padding: 6px; border: 2px solid #d97706; border-radius: 6px; font-weight: bold; text-align: center;" 
+                                        value="${item.maxPerOrder || 99}" 
+                                        onchange="db.ref('canteenMenu/${key}/maxPerOrder').set(parseInt(this.value))">
+                                </div>
+                            </div>
                         </div>`;
                 });
             });
 
-            // Orders List
             db.ref('orders').on('value', snap => {
                 const ordersList = document.getElementById('ordersList'); 
                 ordersList.innerHTML = '';
@@ -548,9 +549,9 @@
                         <div class="order-card ${o.status === 'pending' ? 'order-pending' : 'order-ready'}">
                             <strong>Order #${o.id}</strong><br>
                             📞 ${o.mobile}<br>
-                            Items: <strong>${itemsText}</strong><br>
-                            Total: ₹${o.total}<br>
-                            <div style="margin-top:10px; display:flex; gap:10px;">
+                            Items: <strong style="font-size: 16px;">${itemsText}</strong><br>
+                            Total: <strong style="color: #059669;">₹${o.total}</strong><br>
+                            <div style="margin-top:15px; display:flex; gap:10px;">
                                 <button class="action-btn" style="background:#3b82f6;color:white;flex:1;" onclick="db.ref('orders/${key}/status').set('ready')">🔔 Ready</button> 
                                 <button class="action-btn" style="background:#10b981;color:white;flex:1;" onclick="completeOrder('${key}')">✅ Done</button>
                                 <button class="action-btn" style="background:#ef4444;color:white;flex:1;" onclick="cancelOrder('${key}')">❌ Cancel</button>
@@ -560,7 +561,6 @@
             });
         }
 
-        // --- CANTEEN STATUS TOGGLE ---
         function toggleCanteen() { 
             db.ref('canteenStatus').once('value', snap => { 
                 if (snap.val() !== 'open') {
@@ -578,9 +578,14 @@
                 
                 Object.keys(data).forEach(key => { 
                     list += `
-                        <div class="setup-item" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                            <label><input type="checkbox" id="check_${key}" checked> ${data[key].name}</label>
-                            <input type="number" id="stock_${key}" placeholder="Stock" style="width:100px;padding:5px;">
+                        <div class="setup-item" style="display:flex; flex-direction:column; margin-bottom:15px; padding-bottom:10px; border-bottom:1px solid #eee;">
+                            <label style="font-weight: bold; cursor:pointer; width:100%; margin-bottom:10px;">
+                                <input type="checkbox" id="check_${key}" checked> ${data[key].name}
+                            </label>
+                            <div style="display:flex; gap:10px; width:100%;">
+                                <input type="number" id="stock_${key}" placeholder="Total Stock" style="flex:1; padding:8px; border:1px solid #d1d5db; border-radius:6px;">
+                                <input type="number" id="max_${key}" placeholder="Max Per Order" style="flex:1; padding:8px; border:1px solid #d1d5db; border-radius:6px;">
+                            </div>
                         </div>`; 
                 });
                 
@@ -601,9 +606,11 @@
                 Object.keys(master).forEach(key => { 
                     if (document.getElementById(`check_${key}`).checked) { 
                         let s = document.getElementById(`stock_${key}`).value; 
+                        let m = document.getElementById(`max_${key}`).value; 
                         today[key] = { 
                             ...master[key], 
-                            stock: s === '' ? 999 : parseInt(s) 
+                            stock: s === '' ? 999 : parseInt(s),
+                            maxPerOrder: m === '' ? 99 : parseInt(m)
                         }; 
                     } 
                 });
@@ -615,7 +622,6 @@
             });
         }
         
-        // --- COMPLETE ORDER LOGIC ---
         function completeOrder(key) {
             db.ref(`orders/${key}`).once('value', snap => {
                 let order = snap.val(); 
@@ -629,7 +635,6 @@
             });
         }
 
-        // --- CANCEL ORDER & RETURN INVENTORY LOGIC ---
         function cancelOrder(key) {
             if(!confirm("Are you sure you want to cancel this order? The stock will be returned.")) return;
 
