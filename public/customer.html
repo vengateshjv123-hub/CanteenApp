@@ -180,10 +180,11 @@
             console.log("DEBUG: Attempting to send email...");
             console.log("Service:", SERVICE_ID, "Template:", TEMPLATE_ID);
 
-            // Send via EmailJS with Advanced Error Logging
+            // Send via EmailJS with Advanced Error Logging and matching template variables
             emailjs.send(SERVICE_ID, TEMPLATE_ID, {
                 to_email: tempEmail,
-                otp: generatedOTP
+                passcode: generatedOTP,
+                time: "15 minutes"
             }).then((response) => {
                 console.log("DEBUG: SUCCESS!", response.status, response.text);
                 document.getElementById('infoStep').style.display = 'none';
