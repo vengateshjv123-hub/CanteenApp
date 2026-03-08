@@ -165,8 +165,13 @@
             tempEmail = document.getElementById('emailInput').value;
             tempMobile = document.getElementById('mobileInput').value;
 
-            if (!tempEmail.includes('@') || tempMobile.length !== 10) {
-                alert("Please enter a valid email and 10-digit mobile number.");
+            // 1. Stricter Validation
+            if (!tempEmail.includes('@')) {
+                alert("Please enter a valid email address.");
+                return;
+            }
+            if (tempMobile.length !== 10) {
+                alert("Please enter exactly 10 digits for your mobile number.");
                 return;
             }
 
@@ -187,15 +192,20 @@
                 time: "15 minutes"
             }).then((response) => {
                 console.log("DEBUG: SUCCESS!", response.status, response.text);
+                
+                // Reset the button so it's ready if they go back
+                btn.innerText = "Send OTP";
+                btn.disabled = false;
+                
                 document.getElementById('infoStep').style.display = 'none';
                 document.getElementById('otpStep').style.display = 'block';
             }).catch(err => {
                 console.error("DEBUG: EMAILJS FAILED!", err);
                 
-                // Detailed alert to figure out the exact bug
                 let errorDetails = err.text || err.message || JSON.stringify(err);
                 alert("Network Error Details:\n\n" + errorDetails + "\n\n1. Ensure 'Send email on your behalf' is checked in Gmail connection.\n2. Ensure your Render URL is added to 'Authorized Domains' in EmailJS Account settings.");
                 
+                // Reset button on error too
                 btn.innerText = "Send OTP";
                 btn.disabled = false;
             });
@@ -223,6 +233,9 @@
         function goBack() {
             document.getElementById('infoStep').style.display = 'block';
             document.getElementById('otpStep').style.display = 'none';
+            
+            // Clear the old OTP they typed so they can start fresh
+            document.getElementById('otpInput').value = '';
         }
 
         // --- 3. MAIN APP LOGIC (Menu, Cart, Orders) ---
