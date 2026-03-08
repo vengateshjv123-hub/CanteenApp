@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QuickBite Canteen</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f8f9fa; }
         .navbar { background-color: #2563eb; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
@@ -32,13 +36,14 @@
         .qty-btn { background-color: #2563eb; color: white; border: none; width: 30px; height: 30px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 18px; display: flex; justify-content: center; align-items: center; }
         .qty-display { font-weight: bold; color: #1e3a8a; font-size: 16px; width: 30px; text-align: center; }
 
-        /* Login Screen Styles */
+        /* Login & OTP Screen Styles */
         #loginScreen { display: flex; height: 100vh; align-items: center; justify-content: center; background: #eff6ff; }
         .login-card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 90%; max-width: 400px; text-align: center; }
-        .login-input { width: 100%; padding: 15px; border: 2px solid #bfdbfe; border-radius: 8px; font-size: 18px; text-align: center; margin-bottom: 20px; box-sizing: border-box; font-weight: bold; letter-spacing: 2px; }
+        .login-input { width: 100%; padding: 15px; border: 2px solid #bfdbfe; border-radius: 8px; font-size: 18px; text-align: center; margin-bottom: 20px; box-sizing: border-box; font-weight: bold; letter-spacing: 2px; transition: 0.3s; }
         .login-input:focus { outline: none; border-color: #2563eb; }
         .login-btn { background-color: #2563eb; color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; font-size: 18px; transition: 0.3s; }
         .login-btn:hover { background-color: #1d4ed8; }
+        .login-btn:disabled { background-color: #9ca3af; cursor: not-allowed; }
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
         .modal-content { background: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 400px; box-shadow: 0 10px 15px rgba(0,0,0,0.1); max-height: 80vh; overflow-y: auto; }
@@ -60,12 +65,24 @@
 <body>
 
     <div id="loginScreen">
-        <div class="login-card">
+        <div class="login-card" id="mobileEntryStep">
             <h1 style="color: #2563eb; margin-top: 0; font-size: 40px;">🍔</h1>
             <h2 style="color: #1e3a8a; margin-top: 0;">Welcome to QuickBite</h2>
-            <p style="color: #6b7280; margin-bottom: 25px;">Please enter your mobile number to view the menu and place orders.</p>
+            <p style="color: #6b7280; margin-bottom: 25px;">Please enter your mobile number to securely login.</p>
             <input type="tel" id="mobileInput" class="login-input" placeholder="10-Digit Mobile No." maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-            <button class="login-btn" onclick="loginUser()">Continue</button>
+            
+            <div id="recaptcha-container"></div>
+            
+            <button class="login-btn" id="sendOtpBtn" onclick="sendOTP()">Send OTP</button>
+        </div>
+
+        <div class="login-card" id="otpEntryStep" style="display: none;">
+            <h1 style="color: #2563eb; margin-top: 0; font-size: 40px;">✉️</h1>
+            <h2 style="color: #1e3a8a; margin-top: 0;">Verify Mobile</h2>
+            <p style="color: #6b7280; margin-bottom: 25px;">Enter the 6-digit code sent to <br><strong id="displayMobile" style="color: #1f2937;"></strong></p>
+            <input type="text" id="otpInput" class="login-input" placeholder="------" maxlength="6" style="letter-spacing: 10px; font-size: 24px;" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+            <button class="login-btn" id="verifyOtpBtn" onclick="verifyOTP()">Verify & Login</button>
+            <button style="background:none; border:none; color:#2563eb; margin-top:15px; cursor:pointer; font-weight:bold; font-size: 14px;" onclick="changeNumber()">Change Number</button>
         </div>
     </div>
 
@@ -93,12 +110,10 @@
             <h2 style="margin-top: 0;">Your Cart</h2>
             <div id="cartItemsList"></div>
             <h3 id="cartTotal" style="text-align: right; color: #1f2937;">Total: ₹0</h3>
-            
             <div class="input-group">
                 <label style="font-weight: bold; display: block; margin-bottom: 5px;">Pickup Time (Optional)</label>
                 <input type="text" id="pickupTime" placeholder="e.g., 10:30 AM (Defaults to ASAP)">
             </div>
-            
             <button class="checkout-btn" onclick="placeOrder()">Place Order</button>
             <button class="close-btn" onclick="closeCart()">Close</button>
         </div>
@@ -125,47 +140,133 @@
     </div>
 
     <script>
-        let cart = JSON.parse(localStorage.getItem('userCart')) || [];
-        let myOrderIds = JSON.parse(localStorage.getItem('myOrderIds')) || [];
-        let notifiedOrders = JSON.parse(localStorage.getItem('notifiedOrders')) || [];
-        let userMobile = localStorage.getItem('userMobile');
-        
-        // --- AUTHENTICATION LOGIC ---
-        function checkAuth() {
-            userMobile = localStorage.getItem('userMobile');
-            if (!userMobile) {
-                // Not logged in -> Show Login
-                document.getElementById('loginScreen').style.display = 'flex';
-                document.getElementById('appWrapper').style.display = 'none';
-            } else {
-                // Logged in -> Show App & Load Menu
-                document.getElementById('loginScreen').style.display = 'none';
-                document.getElementById('appWrapper').style.display = 'block';
-                checkUpdates(); // Instantly load data
+        // --- 🔥 1. FIREBASE CONFIGURATION 🔥 ---
+        const firebaseConfig = {
+          apiKey: "AIzaSyClCPrlNv8jYPsAZDRmX7dXNY3bbnHQgR8",
+          authDomain: "quickbite-canteen.firebaseapp.com",
+          projectId: "quickbite-canteen",
+          storageBucket: "quickbite-canteen.firebasestorage.app",
+          messagingSenderId: "929136241430",
+          appId: "1:929136241430:web:3542ff3555823e1ef67e37",
+          measurementId: "G-HW8PFQ1KGK"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        // --- 2. REAL OTP LOGIC ---
+        let confirmationResult;
+        let pendingMobile = "";
+
+        function setupRecaptcha() {
+            if (!window.recaptchaVerifier) {
+                window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+                    'size': 'invisible'
+                });
             }
         }
 
-        function loginUser() {
-            const mobile = document.getElementById('mobileInput').value;
-            if (mobile.length >= 10) {
-                localStorage.setItem('userMobile', mobile);
-                checkAuth();
+        let userMobile = localStorage.getItem('userMobile');
+        function checkAuth() {
+            userMobile = localStorage.getItem('userMobile');
+            if (!userMobile) {
+                document.getElementById('loginScreen').style.display = 'flex';
+                document.getElementById('appWrapper').style.display = 'none';
+                changeNumber(); 
+            } else {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('appWrapper').style.display = 'block';
+                checkUpdates(); 
+            }
+        }
+
+        function sendOTP() {
+            pendingMobile = document.getElementById('mobileInput').value;
+            if (pendingMobile.length === 10) {
+                const phoneNumber = "+91" + pendingMobile; // Assumes Indian numbers (+91)
+                
+                const btn = document.getElementById('sendOtpBtn');
+                btn.innerText = "Sending...";
+                btn.disabled = true;
+
+                setupRecaptcha();
+                const appVerifier = window.recaptchaVerifier;
+
+                auth.signInWithPhoneNumber(phoneNumber, appVerifier)
+                    .then((result) => {
+                        // SMS Sent!
+                        confirmationResult = result;
+                        document.getElementById('mobileEntryStep').style.display = 'none';
+                        document.getElementById('otpEntryStep').style.display = 'block';
+                        document.getElementById('displayMobile').innerText = phoneNumber;
+                        
+                        btn.innerText = "Send OTP";
+                        btn.disabled = false;
+                    }).catch((error) => {
+                        alert("Error sending SMS: " + error.message);
+                        if(window.recaptchaVerifier) {
+                            window.recaptchaVerifier.clear();
+                            window.recaptchaVerifier = null;
+                        }
+                        btn.innerText = "Send OTP";
+                        btn.disabled = false;
+                    });
             } else {
                 alert('Please enter a valid 10-digit mobile number.');
             }
         }
 
+        function verifyOTP() {
+            let enteredOTP = document.getElementById('otpInput').value;
+            if (enteredOTP.length > 0 && confirmationResult) {
+                const btn = document.getElementById('verifyOtpBtn');
+                btn.innerText = "Verifying...";
+                btn.disabled = true;
+
+                confirmationResult.confirm(enteredOTP).then((result) => {
+                    // OTP Correct!
+                    localStorage.setItem('userMobile', pendingMobile);
+                    btn.innerText = "Verify & Login";
+                    btn.disabled = false;
+                    checkAuth();
+                }).catch((error) => {
+                    alert("Incorrect OTP. Please try again.");
+                    btn.innerText = "Verify & Login";
+                    btn.disabled = false;
+                });
+            } else {
+                alert("Please enter the OTP.");
+            }
+        }
+
+        function changeNumber() {
+            document.getElementById('mobileEntryStep').style.display = 'block';
+            document.getElementById('otpEntryStep').style.display = 'none';
+            document.getElementById('otpInput').value = '';
+            pendingMobile = "";
+            confirmationResult = null;
+            if(window.recaptchaVerifier) {
+                window.recaptchaVerifier.clear();
+                window.recaptchaVerifier = null;
+            }
+        }
+
         function logoutUser() {
             if(confirm("Are you sure you want to log out? Your active cart will be saved.")) {
-                localStorage.removeItem('userMobile');
+                localStorage.removeItem('userMobile'); 
                 document.getElementById('mobileInput').value = '';
                 checkAuth();
             }
         }
 
-        // --- APP LOGIC ---
+        // --- 3. STANDARD APP LOGIC ---
+        let cart = JSON.parse(localStorage.getItem('userCart')) || [];
+        let myOrderIds = JSON.parse(localStorage.getItem('myOrderIds')) || [];
+        let notifiedOrders = JSON.parse(localStorage.getItem('notifiedOrders')) || [];
+
         function checkUpdates() {
-            if(!localStorage.getItem('userMobile')) return; // Stop checking if logged out
+            if(!localStorage.getItem('userMobile')) return; 
 
             let status = localStorage.getItem('canteenStatus') || 'closed';
             if (status === 'open') {
@@ -343,7 +444,7 @@
             let orders = JSON.parse(localStorage.getItem('canteenOrders')) || [];
             orders.push({
                 id: orderId,
-                mobile: userMobile, // <--- SAVING THE USER'S MOBILE NUMBER HERE
+                mobile: userMobile, 
                 items: cart,
                 total: total,
                 pickup: pickup,
