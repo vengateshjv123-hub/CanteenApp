@@ -35,7 +35,8 @@
         .input-group input, .input-group select { width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; box-sizing: border-box; }
         
         .publish-btn { background-color: #059669; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; font-size: 16px; margin-top: 5px; }
-        .quick-add-btn { background-color: #fef3c7; color: #d97706; border: 1px solid #fde68a; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; margin: 5px; }
+        .quick-add-btn { background-color: #fef3c7; color: #d97706; border: 1px solid #fde68a; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; margin: 5px; display: inline-flex; align-items: center; gap: 8px; }
+        .quick-delete-btn { background: #ef4444; color: white; border: none; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; cursor: pointer; display: flex; justify-content: center; align-items: center; padding: 0; }
         .delete-btn { background-color: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; }
         
         .inline-input { width: 60px; padding: 4px 8px; border: 1px solid #d1d5db; border-radius: 4px; text-align: center; font-weight: bold; color: #1f2937; }
@@ -73,7 +74,7 @@
         .login-btn { background-color: #059669; color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; font-size: 18px; transition: 0.3s; }
         .login-btn:hover { background-color: #047857; }
 
-        /* NEW TAG STYLING */
+        /* TAG STYLING */
         .cat-badge { font-size: 12px; background: #e5e7eb; padding: 2px 6px; border-radius: 4px; margin-left: 5px; color: #4b5563; }
         .parcel-badge { font-size: 12px; background: #dbeafe; padding: 2px 6px; border-radius: 4px; color: #1e40af; margin-left: 5px; }
     </style>
@@ -136,11 +137,12 @@
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                     <div>
                         <div class="form-card">
-                            <h3>Quick Add to Master Catalog</h3>
-                            <button class="quick-add-btn" onclick="quickAdd('Samosa', 15, 'Snacks', false)">+ Samosa (₹15)</button>
-                            <button class="quick-add-btn" onclick="quickAdd('Egg Puffs', 25, 'Snacks', false)">+ Egg Puffs (₹25)</button>
-                            <button class="quick-add-btn" onclick="quickAdd('Veg Puffs', 22, 'Snacks', false)">+ Veg Puffs (₹22)</button>
-                            <button class="quick-add-btn" onclick="quickAdd('Chicken Puffs', 30, 'Snacks', false)">+ Chicken Puffs (₹30)</button>
+                            <h3>⚡ Quick Add to Master Catalog</h3>
+                            <div id="quickAddContainer">
+                                </div>
+                            <p style="font-size:12px; color:#6b7280; margin-top:15px; border-top:1px solid #e5e7eb; padding-top:10px;">
+                                Want to add more buttons here? Use the "Pin this item" checkbox below!
+                            </p>
                         </div>
 
                         <div class="form-card">
@@ -172,9 +174,14 @@
                                 </select>
                             </div>
 
-                            <div class="input-group" style="display: flex; align-items: center; gap: 10px; background: #f9fafb; padding: 10px; border-radius: 6px; margin-bottom: 20px;">
+                            <div class="input-group" style="display: flex; align-items: center; gap: 10px; background: #f9fafb; padding: 10px; border-radius: 6px; margin-bottom: 10px;">
                                 <input type="checkbox" id="itemParcel" style="width: auto; cursor: pointer;"> 
                                 <label for="itemParcel" style="margin: 0; color: #1e3a8a; cursor: pointer;">Available for Parcel (+₹10)</label>
+                            </div>
+
+                            <div class="input-group" style="display: flex; align-items: center; gap: 10px; background: #fffbeb; padding: 10px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #fde68a;">
+                                <input type="checkbox" id="saveAsQuickAdd" style="width: auto; cursor: pointer;"> 
+                                <label for="saveAsQuickAdd" style="margin: 0; color: #d97706; cursor: pointer; font-weight: bold;">⭐ Pin this item as a Quick Add Button</label>
                             </div>
 
                             <button class="publish-btn" onclick="publishItem()">Save to Master Catalog</button>
@@ -248,9 +255,20 @@
             let master = JSON.parse(localStorage.getItem('masterMenu'));
             if (!master) {
                 let oldMenu = JSON.parse(localStorage.getItem('canteenMenu')) || [];
-                // Defaults to Snacks and no parcel for old items migrating over
                 let newMaster = oldMenu.map(m => ({name: m.name, price: m.price, desc: m.desc, maxPerOrder: null, category: "Snacks", allowParcel: false}));
                 localStorage.setItem('masterMenu', JSON.stringify(newMaster));
+            }
+
+            // Initialize Dynamic Quick Add Buttons if they don't exist
+            let quickAdds = JSON.parse(localStorage.getItem('quickAddItems'));
+            if (!quickAdds) {
+                quickAdds = [
+                    {name: 'Samosa', price: 15, category: 'Snacks', allowParcel: false},
+                    {name: 'Egg Puffs', price: 25, category: 'Snacks', allowParcel: false},
+                    {name: 'Veg Puffs', price: 22, category: 'Snacks', allowParcel: false},
+                    {name: 'Chicken Puffs', price: 30, category: 'Snacks', allowParcel: false}
+                ];
+                localStorage.setItem('quickAddItems', JSON.stringify(quickAdds));
             }
         }
         initializeData();
@@ -363,7 +381,39 @@
             document.getElementById(tabId).classList.add('active');
         }
 
+        function renderQuickAdds() {
+            let quickAdds = JSON.parse(localStorage.getItem('quickAddItems')) || [];
+            const container = document.getElementById('quickAddContainer');
+            container.innerHTML = '';
+            
+            if (quickAdds.length === 0) {
+                container.innerHTML = '<p style="color:#6b7280; font-size:14px;">No quick buttons pinned. Pin one below!</p>';
+            } else {
+                quickAdds.forEach((btn, index) => {
+                    // Clicking the button adds it to catalog. Clicking the 'X' deletes the button.
+                    container.innerHTML += `
+                        <button class="quick-add-btn" onclick="quickAdd('${btn.name}', ${btn.price}, '${btn.category}', ${btn.allowParcel})">
+                            + ${btn.name} (₹${btn.price}) 
+                            <span class="quick-delete-btn" onclick="event.stopPropagation(); deleteQuickAdd(${index})" title="Delete this button">✖</span>
+                        </button>
+                    `;
+                });
+            }
+        }
+
+        function deleteQuickAdd(index) {
+            if(confirm("Delete this Quick Add button?")) {
+                let quickAdds = JSON.parse(localStorage.getItem('quickAddItems')) || [];
+                quickAdds.splice(index, 1);
+                localStorage.setItem('quickAddItems', JSON.stringify(quickAdds));
+                renderQuickAdds();
+            }
+        }
+
         function loadDashboard() {
+            // Render Dynamic Quick Add Buttons
+            renderQuickAdds();
+
             // LOAD MASTER CATALOG
             let master = JSON.parse(localStorage.getItem('masterMenu')) || [];
             const catalogList = document.getElementById('catalogList');
@@ -587,7 +637,6 @@
                 let canceledOrder = orders[index];
 
                 canceledOrder.items.forEach(cartItem => {
-                    // NEW: Uses baseName so Parcel items correctly return stock to the original item
                     let itemName = cartItem.baseName ? cartItem.baseName : cartItem.name;
                     let menuItem = menu.find(m => m.name === itemName);
                     if (menuItem && menuItem.stock !== null) {
@@ -602,9 +651,15 @@
             }
         }
 
-        // Updated to include defaults for category and parcel
         function quickAdd(name, price, category, allowParcel) {
             let master = JSON.parse(localStorage.getItem('masterMenu')) || [];
+            
+            // Check if item already exists in master to prevent duplicates
+            if (master.some(item => item.name === name)) {
+                alert(`${name} is already in your Master Catalog!`);
+                return;
+            }
+
             master.push({ name: name, price: price, desc: '', maxPerOrder: null, category: category, allowParcel: allowParcel });
             localStorage.setItem('masterMenu', JSON.stringify(master));
             
@@ -623,14 +678,24 @@
             const maxLimit = document.getElementById('itemMaxLimit').value.trim();
             const cat = document.getElementById('itemCategory').value;
             const parcel = document.getElementById('itemParcel').checked;
+            const pinToQuickAdd = document.getElementById('saveAsQuickAdd').checked;
             
             if(name !== '' && price !== '') {
+                let parsedPrice = parseInt(price);
+                
+                // 1. Add to Master Catalog
                 let master = JSON.parse(localStorage.getItem('masterMenu')) || [];
                 let parsedLimit = maxLimit === '' ? null : parseInt(maxLimit);
 
+                // Prevent exact duplicates in master
+                if (master.some(item => item.name === name)) {
+                    alert(`An item named "${name}" already exists in the catalog.`);
+                    return;
+                }
+
                 master.push({ 
                     name: name, 
-                    price: parseInt(price), 
+                    price: parsedPrice, 
                     desc: desc, 
                     maxPerOrder: parsedLimit,
                     category: cat,
@@ -638,11 +703,12 @@
                 });
                 localStorage.setItem('masterMenu', JSON.stringify(master));
                 
+                // 2. Add to Live Menu if Canteen is Open
                 if(localStorage.getItem('canteenStatus') === 'open') {
                     let live = JSON.parse(localStorage.getItem('canteenMenu')) || [];
                     live.push({ 
                         name: name, 
-                        price: parseInt(price), 
+                        price: parsedPrice, 
                         desc: desc, 
                         stock: null, 
                         maxPerOrder: parsedLimit,
@@ -652,11 +718,29 @@
                     localStorage.setItem('canteenMenu', JSON.stringify(live));
                 }
 
+                // 3. Save as Quick Add Button (If checked)
+                if (pinToQuickAdd) {
+                    let quickAdds = JSON.parse(localStorage.getItem('quickAddItems')) || [];
+                    // Prevent duplicate buttons
+                    if (!quickAdds.some(btn => btn.name === name)) {
+                        quickAdds.push({
+                            name: name,
+                            price: parsedPrice,
+                            category: cat,
+                            allowParcel: parcel
+                        });
+                        localStorage.setItem('quickAddItems', JSON.stringify(quickAdds));
+                    }
+                }
+
+                // Clear Inputs
                 document.getElementById('itemName').value = '';
                 document.getElementById('itemPrice').value = '';
                 document.getElementById('itemDesc').value = '';
                 document.getElementById('itemMaxLimit').value = '';
                 document.getElementById('itemParcel').checked = false;
+                document.getElementById('saveAsQuickAdd').checked = false;
+                
                 loadDashboard();
             } else {
                 alert('Please enter Name and Price.');
@@ -675,7 +759,7 @@
         // Initialize Authentication on Page Load
         checkAdminAuth();
 
-        // Safe Dashboard Auto-Refresh (ignores if user is typing or selecting a dropdown)
+        // Safe Dashboard Auto-Refresh
         setInterval(() => {
             if (localStorage.getItem('sellerAuth') === 'true' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'SELECT') {
                 loadDashboard();
