@@ -8,67 +8,385 @@
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f8f9fa; }
-        .navbar { background-color: #2563eb; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
-        .navbar h2 { margin: 0; font-size: 24px; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            background-color: #f8f9fa; 
+        }
+
+        .navbar { 
+            background-color: #2563eb; 
+            color: white; 
+            padding: 15px 30px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+            position: sticky; 
+            top: 0; 
+            z-index: 100; 
+        }
+
+        .navbar h2 { 
+            margin: 0; 
+            font-size: 24px; 
+        }
         
-        .cart-btn { background-color: white; color: #2563eb; border: 2px solid white; padding: 12px 25px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; font-size: 20px; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
-        .cart-btn:hover { transform: scale(1.05); box-shadow: 0 6px 12px rgba(0,0,0,0.3); }
-        .logout-btn { background: transparent; color: white; border: 1px solid white; padding: 8px 12px; border-radius: 6px; cursor: pointer; margin-right: 15px; font-weight: bold; }
-        .logout-btn:hover { background: rgba(255,255,255,0.2); }
+        .cart-btn { 
+            background-color: white; 
+            color: #2563eb; 
+            border: 2px solid white; 
+            padding: 12px 25px; 
+            border-radius: 12px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: transform 0.2s, box-shadow 0.2s; 
+            font-size: 20px; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2); 
+        }
+
+        .cart-btn:hover { 
+            transform: scale(1.05); 
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3); 
+        }
+
+        .logout-btn { 
+            background: transparent; 
+            color: white; 
+            border: 1px solid white; 
+            padding: 8px 12px; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            margin-right: 15px; 
+            font-weight: bold; 
+        }
+
+        .logout-btn:hover { 
+            background: rgba(255,255,255,0.2); 
+        }
         
-        .menu-container { padding: 40px; display: flex; gap: 25px; flex-wrap: wrap; justify-content: center; }
-        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); width: 220px; text-align: center; border: 1px solid #e5e7eb; transition: transform 0.2s; display: flex; flex-direction: column; }
-        .card:hover { transform: translateY(-5px); }
-        .card h3 { margin: 10px 0 5px; color: #1f2937; }
-        .card p.desc { color: #6b7280; font-size: 14px; min-height: 40px; margin: 0; }
-        .card p.price { color: #059669; font-weight: bold; font-size: 18px; margin-bottom: 5px; }
+        .menu-container { 
+            padding: 40px; 
+            display: flex; 
+            gap: 25px; 
+            flex-wrap: wrap; 
+            justify-content: center; 
+            max-width: 1200px; 
+            margin: 0 auto; 
+        }
         
-        .stock-warning { color: #ef4444; font-size: 13px; font-weight: bold; margin-bottom: 5px; height: 15px; }
-        .limit-warning { color: #d97706; font-size: 12px; font-weight: bold; margin-bottom: 10px; height: 14px; }
+        /* Category Header Styling */
+        .category-header { 
+            width: 100%; 
+            border-bottom: 2px solid #2563eb; 
+            color: #1e3a8a; 
+            margin-top: 20px; 
+            margin-bottom: 5px; 
+            padding-bottom: 5px; 
+            font-size: 26px; 
+            text-transform: uppercase; 
+        }
+
+        .card { 
+            background: white; 
+            padding: 20px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+            width: 220px; 
+            text-align: center; 
+            border: 1px solid #e5e7eb; 
+            transition: transform 0.2s; 
+            display: flex; 
+            flex-direction: column; 
+        }
+
+        .card:hover { 
+            transform: translateY(-5px); 
+        }
+
+        .card h3 { 
+            margin: 10px 0 5px; 
+            color: #1f2937; 
+        }
+
+        .card p.desc { 
+            color: #6b7280; 
+            font-size: 14px; 
+            min-height: 40px; 
+            margin: 0; 
+        }
+
+        .card p.price { 
+            color: #059669; 
+            font-weight: bold; 
+            font-size: 20px; 
+            margin-bottom: 5px; 
+        }
         
-        .btn-add { background-color: #2563eb; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; transition: background 0.3s; margin-top: auto; }
-        .btn-add:hover { background-color: #1d4ed8; }
-        .btn-disabled { background-color: #9ca3af; cursor: not-allowed; }
+        .stock-warning { 
+            color: #ef4444; 
+            font-size: 13px; 
+            font-weight: bold; 
+            margin-bottom: 5px; 
+            height: 15px; 
+        }
+
+        .limit-warning { 
+            color: #d97706; 
+            font-size: 12px; 
+            font-weight: bold; 
+            margin-bottom: 10px; 
+            height: 14px; 
+        }
         
-        .qty-controls { display: flex; justify-content: space-between; align-items: center; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 5px; margin-top: auto; }
-        .qty-btn { background-color: #2563eb; color: white; border: none; width: 30px; height: 30px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 18px; display: flex; justify-content: center; align-items: center; }
-        .qty-display { font-weight: bold; color: #1e3a8a; font-size: 16px; width: 30px; text-align: center; }
+        /* Parcel Checkbox Styling */
+        .parcel-box { 
+            background: #eff6ff; 
+            border: 1px solid #bfdbfe; 
+            padding: 8px; 
+            border-radius: 6px; 
+            margin-bottom: 15px; 
+            font-size: 14px; 
+            color: #1e3a8a; 
+            font-weight: bold; 
+            cursor: pointer; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 5px; 
+        }
+
+        .parcel-box input { 
+            cursor: pointer; 
+            width: 16px; 
+            height: 16px; 
+        }
+
+        .btn-add { 
+            background-color: #2563eb; 
+            color: white; 
+            border: none; 
+            padding: 10px; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            width: 100%; 
+            font-weight: bold; 
+            transition: background 0.3s; 
+            margin-top: auto; 
+        }
+
+        .btn-add:hover { 
+            background-color: #1d4ed8; 
+        }
+
+        .btn-disabled { 
+            background-color: #9ca3af; 
+            cursor: not-allowed; 
+        }
+        
+        .qty-controls { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            background: #eff6ff; 
+            border: 1px solid #bfdbfe; 
+            border-radius: 6px; 
+            padding: 5px; 
+            margin-top: auto; 
+        }
+
+        .qty-btn { 
+            background-color: #2563eb; 
+            color: white; 
+            border: none; 
+            width: 30px; 
+            height: 30px; 
+            border-radius: 4px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            font-size: 18px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+        }
+
+        .qty-display { 
+            font-weight: bold; 
+            color: #1e3a8a; 
+            font-size: 16px; 
+            width: 30px; 
+            text-align: center; 
+        }
 
         /* Login Screen Styles */
-        #loginScreen { display: flex; height: 100vh; align-items: center; justify-content: center; background: #eff6ff; }
-        .login-card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 90%; max-width: 400px; text-align: center; }
-        .login-input { width: 100%; padding: 15px; border: 2px solid #bfdbfe; border-radius: 8px; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; text-align: center; }
-        .login-btn { background-color: #2563eb; color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; font-size: 18px; transition: 0.3s; }
-        .login-btn:hover { background-color: #1d4ed8; }
+        #loginScreen { 
+            display: flex; 
+            height: 100vh; 
+            align-items: center; 
+            justify-content: center; 
+            background: #eff6ff; 
+        }
+
+        .login-card { 
+            background: white; 
+            padding: 40px; 
+            border-radius: 12px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
+            width: 90%; 
+            max-width: 400px; 
+            text-align: center; 
+        }
+
+        .login-input { 
+            width: 100%; 
+            padding: 15px; 
+            border: 2px solid #bfdbfe; 
+            border-radius: 8px; 
+            font-size: 16px; 
+            margin-bottom: 15px; 
+            box-sizing: border-box; 
+            text-align: center; 
+        }
+
+        .login-btn { 
+            background-color: #2563eb; 
+            color: white; 
+            border: none; 
+            padding: 15px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            width: 100%; 
+            font-weight: bold; 
+            font-size: 18px; 
+            transition: 0.3s; 
+        }
+
+        .login-btn:hover { 
+            background-color: #1d4ed8; 
+        }
 
         /* Modal Styles */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 400px; box-shadow: 0 10px 15px rgba(0,0,0,0.1); max-height: 80vh; overflow-y: auto; }
-        .cart-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e5e7eb; padding: 10px 0; }
-        .remove-btn { background-color: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; }
-        .input-group { margin-top: 15px; margin-bottom: 15px; }
-        .input-group input { width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; box-sizing: border-box; }
-        .checkout-btn { background-color: #10b981; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; font-size: 16px; margin-bottom: 10px; }
-        .close-btn { background-color: #6b7280; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; }
+        .modal { 
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0,0,0,0.5); 
+            justify-content: center; 
+            align-items: center; 
+            z-index: 1000; 
+        }
 
-        #readyContent { text-align: center; border: 4px solid #10b981; }
-        #cancelContent { text-align: center; border: 4px solid #ef4444; } 
+        .modal-content { 
+            background: white; 
+            padding: 30px; 
+            border-radius: 12px; 
+            width: 90%; 
+            max-width: 400px; 
+            box-shadow: 0 10px 15px rgba(0,0,0,0.1); 
+            max-height: 80vh; 
+            overflow-y: auto; 
+        }
+
+        .cart-item { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-bottom: 1px solid #e5e7eb; 
+            padding: 10px 0; 
+        }
+
+        .remove-btn { 
+            background-color: #ef4444; 
+            color: white; 
+            border: none; 
+            padding: 5px 10px; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            font-size: 12px; 
+        }
+
+        .input-group { 
+            margin-top: 15px; 
+            margin-bottom: 15px; 
+        }
+
+        .input-group input { 
+            width: 100%; 
+            padding: 10px; 
+            border: 1px solid #d1d5db; 
+            border-radius: 6px; 
+            box-sizing: border-box; 
+        }
+
+        .checkout-btn { 
+            background-color: #10b981; 
+            color: white; 
+            border: none; 
+            padding: 12px; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            width: 100%; 
+            font-weight: bold; 
+            font-size: 16px; 
+            margin-bottom: 10px; 
+        }
+
+        .close-btn { 
+            background-color: #6b7280; 
+            color: white; 
+            border: none; 
+            padding: 12px; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            width: 100%; 
+            font-weight: bold; 
+        }
+
+        #readyContent { 
+            text-align: center; 
+            border: 4px solid #10b981; 
+        }
+
+        #cancelContent { 
+            text-align: center; 
+            border: 4px solid #ef4444; 
+        } 
         
-        #closedScreen { display: none; text-align: center; padding: 100px 20px; }
-        #closedScreen h1 { color: #ef4444; font-size: 36px; }
-        #closedScreen p { color: #6b7280; font-size: 18px; }
+        #closedScreen { 
+            display: none; 
+            text-align: center; 
+            padding: 100px 20px; 
+        }
+
+        #closedScreen h1 { 
+            color: #ef4444; 
+            font-size: 36px; 
+        }
+
+        #closedScreen p { 
+            color: #6b7280; 
+            font-size: 18px; 
+        }
     </style>
 </head>
 <body>
 
     <div id="loginScreen">
+        
         <div class="login-card" id="infoStep">
             <h1 style="color: #2563eb; margin-top: 0; font-size: 40px;">🍔</h1>
             <h2 style="color: #1e3a8a; margin-top: 0;">QuickBite Canteen</h2>
             <p style="color: #6b7280; margin-bottom: 20px;">Enter details to receive your verification code via email.</p>
+            
             <input type="email" id="emailInput" class="login-input" placeholder="Email Address">
             <input type="tel" id="mobileInput" class="login-input" placeholder="10-Digit Mobile No." maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+            
             <button class="login-btn" id="sendBtn" onclick="sendEmailOTP()">Send OTP</button>
         </div>
 
@@ -76,7 +394,9 @@
             <h1 style="color: #2563eb; margin-top: 0; font-size: 40px;">✉️</h1>
             <h2 style="color: #1e3a8a; margin-top: 0;">Verify Email</h2>
             <p style="color: #6b7280; margin-bottom: 25px;">Enter the 4-digit code sent to your email.</p>
+            
             <input type="text" id="otpInput" class="login-input" placeholder="----" maxlength="4" style="letter-spacing: 10px; font-size: 24px;">
+            
             <button class="login-btn" onclick="verifyOTP()">Verify & Login</button>
             <button style="background:none; border:none; color:#2563eb; margin-top:15px; cursor:pointer; font-weight:bold;" onclick="goBack()">Change Details</button>
         </div>
@@ -138,11 +458,11 @@
     </div>
 
     <script>
-        // --- 🛑 1. EMAILJS CONFIGURATION ---
+        // --- 1. EMAILJS CONFIGURATION ---
         const SERVICE_ID = "service_uzeknsj"; 
         const TEMPLATE_ID = "template_5cxhvu7"; 
         const PUBLIC_KEY = "wUfYYvhMWJmnQ5FCs"; 
-
+        
         emailjs.init(PUBLIC_KEY);
 
         let generatedOTP = "";
@@ -154,7 +474,7 @@
             if (localStorage.getItem('userEmail')) {
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('appWrapper').style.display = 'block';
-                checkUpdates(); // Start the app update loops
+                checkUpdates(); 
             } else {
                 document.getElementById('loginScreen').style.display = 'flex';
                 document.getElementById('appWrapper').style.display = 'none';
@@ -165,7 +485,6 @@
             tempEmail = document.getElementById('emailInput').value;
             tempMobile = document.getElementById('mobileInput').value;
 
-            // 1. Stricter Validation
             if (!tempEmail.includes('@')) {
                 alert("Please enter a valid email address.");
                 return;
@@ -175,45 +494,31 @@
                 return;
             }
 
-            // Generate 4-digit code
             generatedOTP = Math.floor(1000 + Math.random() * 9000).toString();
             
             const btn = document.getElementById('sendBtn');
-            btn.innerText = "Sending OTP...";
+            btn.innerText = "Sending OTP..."; 
             btn.disabled = true;
 
-            console.log("DEBUG: Attempting to send email...");
-            console.log("Service:", SERVICE_ID, "Template:", TEMPLATE_ID);
-
-            // Send via EmailJS with Advanced Error Logging and matching template variables
             emailjs.send(SERVICE_ID, TEMPLATE_ID, {
                 to_email: tempEmail,
                 passcode: generatedOTP,
                 time: "15 minutes"
-            }).then((response) => {
-                console.log("DEBUG: SUCCESS!", response.status, response.text);
-                
-                // Reset the button so it's ready if they go back
-                btn.innerText = "Send OTP";
+            }).then(() => {
+                btn.innerText = "Send OTP"; 
                 btn.disabled = false;
                 
                 document.getElementById('infoStep').style.display = 'none';
                 document.getElementById('otpStep').style.display = 'block';
             }).catch(err => {
-                console.error("DEBUG: EMAILJS FAILED!", err);
-                
-                let errorDetails = err.text || err.message || JSON.stringify(err);
-                alert("Network Error Details:\n\n" + errorDetails + "\n\n1. Ensure 'Send email on your behalf' is checked in Gmail connection.\n2. Ensure your Render URL is added to 'Authorized Domains' in EmailJS Account settings.");
-                
-                // Reset button on error too
-                btn.innerText = "Send OTP";
+                alert("Network Error Details:\n\n" + (err.text || err.message));
+                btn.innerText = "Send OTP"; 
                 btn.disabled = false;
             });
         }
 
         function verifyOTP() {
-            const entered = document.getElementById('otpInput').value;
-            if (entered === generatedOTP) {
+            if (document.getElementById('otpInput').value === generatedOTP) {
                 localStorage.setItem('userEmail', tempEmail);
                 localStorage.setItem('userMobile', tempMobile);
                 checkAuth();
@@ -233,26 +538,35 @@
         function goBack() {
             document.getElementById('infoStep').style.display = 'block';
             document.getElementById('otpStep').style.display = 'none';
-            
-            // Clear the old OTP they typed so they can start fresh
             document.getElementById('otpInput').value = '';
         }
 
-        // --- 3. MAIN APP LOGIC (Menu, Cart, Orders) ---
+        // --- 3. MAIN APP LOGIC (Categories, Cart & Orders) ---
         let cart = JSON.parse(localStorage.getItem('userCart')) || [];
         let myOrderIds = JSON.parse(localStorage.getItem('myOrderIds')) || [];
         let notifiedOrders = JSON.parse(localStorage.getItem('notifiedOrders')) || [];
+        
+        // This stores the state of the "Pack as Parcel" checkboxes
+        let parcelSelections = JSON.parse(localStorage.getItem('parcelSelections')) || {};
+
+        window.toggleParcel = function(name, isChecked) {
+            parcelSelections[name] = isChecked;
+            localStorage.setItem('parcelSelections', JSON.stringify(parcelSelections));
+            loadMenu(); // Refresh the menu to show the updated price
+        };
 
         function checkUpdates() {
             if(!localStorage.getItem('userEmail')) return; 
 
             let status = localStorage.getItem('canteenStatus') || 'closed';
+            
             if (status === 'open') {
                 document.getElementById('activeApp').style.display = 'block';
                 document.getElementById('cartArea').style.display = 'flex';
                 document.getElementById('closedScreen').style.display = 'none';
-                // Only reload menu if user isn't actively clicking buttons
-                if (!document.querySelector('.qty-btn:active')) {
+                
+                // Only refresh menu if user is not actively clicking a button
+                if (!document.querySelector('.qty-btn:active') && !document.querySelector('input[type="checkbox"]:active')) {
                     loadMenu(); 
                 }
             } else {
@@ -262,7 +576,7 @@
                 closeCart(); 
             }
 
-            // Check if any of MY orders have changed status
+            // Real-time order status tracking
             let globalOrders = JSON.parse(localStorage.getItem('canteenOrders')) || [];
             globalOrders.forEach(order => {
                 if (myOrderIds.includes(order.id) && order.status === 'ready' && !notifiedOrders.includes(order.id + '_ready')) {
@@ -281,7 +595,6 @@
             });
         }
         
-        // Auto-refresh logic every 2 seconds
         setInterval(checkUpdates, 2000);
 
         function updateCartUI() {
@@ -290,6 +603,7 @@
             localStorage.setItem('userCart', JSON.stringify(cart));
         }
 
+        // Core function that builds the UI for the food items
         function loadMenu() {
             let menu = JSON.parse(localStorage.getItem('canteenMenu')) || [];
             const container = document.getElementById('menu-container');
@@ -300,59 +614,91 @@
                 return;
             }
 
-            menu.forEach(item => {
-                let cartItem = cart.find(c => c.name === item.name);
-                let currentQty = cartItem ? cartItem.quantity : 0;
-                
-                let isUnlimited = (item.stock === null || item.stock === undefined);
-                let stockWarning = (!isUnlimited && item.stock > 0 && item.stock <= 5) ? `Only ${item.stock} left!` : '';
-                
-                let hasLimit = (item.maxPerOrder !== null && item.maxPerOrder !== undefined);
-                let limitWarning = hasLimit ? `Max ${item.maxPerOrder} per order` : '';
-                
-                let buttonHTML = '';
-                if (!isUnlimited && item.stock <= 0) {
-                    buttonHTML = `<button class="btn-add btn-disabled" disabled>Out of Stock</button>`;
-                } else if (currentQty === 0) {
-                    let passStock = isUnlimited ? 'null' : item.stock;
-                    let passLimit = hasLimit ? item.maxPerOrder : 'null';
-                    buttonHTML = `<button class="btn-add" onclick="changeQty('${item.name}', ${item.price}, 1, ${passStock}, ${passLimit})">Add to Cart</button>`;
-                } else {
-                    let passStock = isUnlimited ? 'null' : item.stock;
-                    let passLimit = hasLimit ? item.maxPerOrder : 'null';
-                    buttonHTML = `
-                        <div class="qty-controls">
-                            <button class="qty-btn" onclick="changeQty('${item.name}', ${item.price}, -1, ${passStock}, ${passLimit})">-</button>
-                            <span class="qty-display">${currentQty}</span>
-                            <button class="qty-btn" onclick="changeQty('${item.name}', ${item.price}, 1, ${passStock}, ${passLimit})">+</button>
-                        </div>
-                    `;
-                }
+            // Process categories one by one
+            const categories = ["Lunch", "Snacks", "Beverages", "Icecream"];
 
-                container.innerHTML += `
-                    <div class="card">
-                        <h3>${item.name}</h3>
-                        <p class="desc">${item.desc || ''}</p>
-                        <p class="price">₹${item.price}</p>
-                        <div class="stock-warning">${stockWarning}</div>
-                        <div class="limit-warning">${limitWarning}</div>
-                        ${buttonHTML}
-                    </div>
-                `;
+            categories.forEach(cat => {
+                // Find all items that belong to this category (Defaults to snacks if seller didn't pick one)
+                let catItems = menu.filter(m => (m.category || "Snacks") === cat);
+                
+                if (catItems.length > 0) {
+                    
+                    // 1. Add Category Header
+                    container.innerHTML += `<h2 class="category-header">${cat}</h2>`;
+                    
+                    // 2. Render Cards for this Category
+                    catItems.forEach(item => {
+                        let isParcel = parcelSelections[item.name] || false;
+                        
+                        let actualName = isParcel ? item.name + " (Parcel)" : item.name;
+                        let actualPrice = isParcel ? Number(item.price) + 10 : Number(item.price);
+                        
+                        let cartItem = cart.find(c => c.name === actualName);
+                        let currentQty = cartItem ? cartItem.quantity : 0;
+                        
+                        let isUnlimited = (item.stock === null || item.stock === undefined);
+                        let stockWarning = (!isUnlimited && item.stock > 0 && item.stock <= 5) ? `Only ${item.stock} left!` : '';
+                        
+                        let hasLimit = (item.maxPerOrder !== null && item.maxPerOrder !== undefined);
+                        let limitWarning = hasLimit ? `Max ${item.maxPerOrder} per order` : '';
+                        
+                        // Show Parcel Checkbox ONLY if seller enabled it for this item
+                        let parcelHtml = item.allowParcel ? 
+                            `<label class="parcel-box"><input type="checkbox" onchange="toggleParcel('${item.name}', this.checked)" ${isParcel ? 'checked' : ''}> 🥡 Pack as Parcel (+₹10)</label>` : 
+                            '<div style="height:44px; margin-bottom:15px;"></div>';
+
+                        let passStock = isUnlimited ? 'null' : item.stock;
+                        let passLimit = hasLimit ? item.maxPerOrder : 'null';
+                        let buttonHTML = '';
+
+                        // Stock limits check against the total sum of normal + parcel versions in the cart
+                        let combinedQty = cart.filter(c => (c.baseName || c.name) === item.name).reduce((sum, c) => sum + c.quantity, 0);
+
+                        if (!isUnlimited && combinedQty >= item.stock && currentQty === 0) {
+                            buttonHTML = `<button class="btn-add btn-disabled" disabled>Out of Stock</button>`;
+                        } else if (currentQty === 0) {
+                            buttonHTML = `<button class="btn-add" onclick="changeQty('${item.name}', ${item.price}, 1, ${passStock}, ${passLimit}, ${isParcel})">Add to Cart</button>`;
+                        } else {
+                            buttonHTML = `
+                                <div class="qty-controls">
+                                    <button class="qty-btn" onclick="changeQty('${item.name}', ${item.price}, -1, ${passStock}, ${passLimit}, ${isParcel})">-</button>
+                                    <span class="qty-display">${currentQty}</span>
+                                    <button class="qty-btn" onclick="changeQty('${item.name}', ${item.price}, 1, ${passStock}, ${passLimit}, ${isParcel})">+</button>
+                                </div>`;
+                        }
+
+                        container.innerHTML += `
+                            <div class="card">
+                                <h3>${item.name}</h3>
+                                <p class="desc">${item.desc || ''}</p>
+                                <p class="price">₹${actualPrice}</p>
+                                <div class="stock-warning">${stockWarning}</div>
+                                <div class="limit-warning">${limitWarning}</div>
+                                ${parcelHtml}
+                                ${buttonHTML}
+                            </div>`;
+                    });
+                }
             });
         }
 
-        function changeQty(name, price, delta, stockLimit, maxLimit) {
-            let itemIndex = cart.findIndex(c => c.name === name);
+        function changeQty(baseName, basePrice, delta, stockLimit, maxLimit, isParcel) {
+            let actualName = isParcel ? baseName + " (Parcel)" : baseName;
+            let actualPrice = isParcel ? Number(basePrice) + 10 : Number(basePrice);
+
+            let itemIndex = cart.findIndex(c => c.name === actualName);
             let currentQty = itemIndex > -1 ? cart[itemIndex].quantity : 0;
             
-            if (delta > 0 && stockLimit !== null && currentQty >= stockLimit) {
+            // Check limits against combined parcel and normal quantities
+            let combinedQty = cart.filter(c => (c.baseName || c.name) === baseName).reduce((sum, c) => sum + c.quantity, 0);
+
+            if (delta > 0 && stockLimit !== null && combinedQty >= stockLimit) {
                 alert(`Sorry, we only have ${stockLimit} of those available right now.`);
                 return;
             }
 
-            if (delta > 0 && maxLimit !== null && currentQty >= maxLimit) {
-                alert(`You can only order a maximum of ${maxLimit} ${name} per order.`);
+            if (delta > 0 && maxLimit !== null && combinedQty >= maxLimit) {
+                alert(`You can only order a maximum of ${maxLimit} ${baseName} per order.`);
                 return;
             }
 
@@ -362,7 +708,13 @@
                     cart.splice(itemIndex, 1); 
                 }
             } else if (delta > 0) {
-                cart.push({ name: name, price: price, quantity: 1 });
+                cart.push({ 
+                    baseName: baseName, 
+                    name: actualName, 
+                    price: actualPrice, 
+                    quantity: 1, 
+                    isParcel: isParcel 
+                });
             }
             
             updateCartUI();
@@ -382,7 +734,7 @@
                     total += itemTotal;
                     cartList.innerHTML += `
                         <div class="cart-item">
-                            <span><strong>${item.name} x ${item.quantity}</strong> - ₹${itemTotal}</span>
+                            <span><strong>${item.name} x ${item.quantity}</strong><br>₹${itemTotal}</span>
                             <button class="remove-btn" onclick="removeItem(${index})">Remove All</button>
                         </div>
                     `;
@@ -404,12 +756,16 @@
         function closeCancelModal() { document.getElementById('cancelModal').style.display = 'none'; }
 
         function placeOrder() {
-            if (cart.length === 0) { alert("Add items to your cart first!"); return; }
+            if (cart.length === 0) {
+                alert("Add items to your cart first!");
+                return;
+            }
             
-            // 1. Deduct stock locally from the live menu
+            // Deduct stock using baseName so it matches the global inventory
             let menu = JSON.parse(localStorage.getItem('canteenMenu')) || [];
             cart.forEach(cartItem => {
-                let menuItem = menu.find(m => m.name === cartItem.name);
+                let itemName = cartItem.baseName ? cartItem.baseName : cartItem.name;
+                let menuItem = menu.find(m => m.name === itemName);
                 if (menuItem && menuItem.stock !== null) {
                     menuItem.stock -= cartItem.quantity;
                     if (menuItem.stock < 0) menuItem.stock = 0; 
@@ -423,12 +779,11 @@
             let total = cart.reduce((sum, item) => sum + (Number(item.price) * item.quantity), 0);
             let orderId = Math.floor(Math.random() * 10000); 
             
-            // 2. Add to global orders for the seller to see
             let orders = JSON.parse(localStorage.getItem('canteenOrders')) || [];
             orders.push({
                 id: orderId,
                 mobile: localStorage.getItem('userMobile'), 
-                items: JSON.parse(JSON.stringify(cart)), // Deep copy cart
+                items: JSON.parse(JSON.stringify(cart)), 
                 total: total,
                 pickup: pickup,
                 timePlaced: new Date().toLocaleTimeString(),
@@ -436,12 +791,14 @@
             });
             localStorage.setItem('canteenOrders', JSON.stringify(orders));
             
-            // 3. Track this order on this device
             myOrderIds.push(orderId);
             localStorage.setItem('myOrderIds', JSON.stringify(myOrderIds));
 
-            // 4. Reset cart
+            // Clear Cart and Parcel Selections for the next order
             cart = []; 
+            parcelSelections = {};
+            localStorage.removeItem('parcelSelections');
+            
             updateCartUI();
             loadMenu(); 
             closeCart();
@@ -449,7 +806,7 @@
             alert(`Order #${orderId} placed successfully!`);
         }
 
-        // Initialize authentication check on load
+        // Run authentication check on load
         checkAuth();
         updateCartUI();
     </script>
