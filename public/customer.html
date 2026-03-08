@@ -11,6 +11,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     
     <style>
+        /* ORIGINAL UI STYLING */
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             margin: 0; 
@@ -78,6 +79,23 @@
             color: #059669; 
             font-weight: bold; 
             font-size: 20px; 
+            margin-bottom: 10px;
+        }
+        
+        .parcel-box { 
+            background: #eff6ff; 
+            border: 1px solid #bfdbfe; 
+            padding: 8px; 
+            border-radius: 6px; 
+            margin-bottom: 15px; 
+            font-size: 14px; 
+            color: #1e3a8a; 
+            font-weight: bold; 
+            cursor: pointer; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 5px; 
         }
 
         .btn-add { 
@@ -89,6 +107,7 @@
             cursor: pointer; 
             width: 100%; 
             font-weight: bold; 
+            margin-top: auto; 
         }
 
         #loginScreen { 
@@ -178,6 +197,7 @@
         
         <div id="activeApp">
             <div class="menu-container" id="menu-container"></div>
+            
             <div class="status-tracker">
                 <h3 style="margin-top:0;">📋 My Recent Orders</h3>
                 <div id="myOrderStatus">No active orders.</div>
@@ -185,7 +205,8 @@
         </div>
         
         <div id="closedScreen" style="display:none; text-align:center; padding:100px;">
-            <h1>🛑 Canteen Closed</h1>
+            <h1 style="color: #ef4444;">🛑 Canteen is Closed</h1>
+            <p>The seller is not accepting orders right now.</p>
         </div>
     </div>
 
@@ -200,36 +221,31 @@
     </div>
 
     <script>
-        // --- FIREBASE CONFIGURATION ---
+        // --- CLOUD SETUP ---
         const firebaseConfig = { 
             databaseURL: "https://quickbite-canteen-default-rtdb.firebaseio.com/" 
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        
-        // --- EMAILJS CONFIGURATION ---
         emailjs.init("wUfYYvhMWJmnQ5FCs");
 
+        // --- STATE VARIABLES ---
         let generatedOTP = "";
-        let cart = {}; // Object to handle grouped items
+        let cart = {}; 
         let parcelSelections = {};
+        let menuDataCache = {}; 
+        let knownOrders = {}; // Tracks order status for Pop-Ups
 
         // --- AUTHENTICATION ---
         function sendOTP() {
             let email = document.getElementById('emailInput').value;
             let mobile = document.getElementById('mobileInput').value;
             
-            if (!email.includes('@') || mobile.length !== 10) { 
-                alert("Invalid details"); 
-                return; 
-            }
+            if (!email.includes('@') || mobile.length !== 10) { alert("Invalid details"); return; }
             
             generatedOTP = Math.floor(1000 + Math.random() * 9000).toString();
-            
-            emailjs.send("service_uzeknsj", "template_5cxhvu7", { 
-                to_email: email, 
-                passcode: generatedOTP 
-            }).then(() => { 
+            emailjs.send("service_uzeknsj", "template_5cxhvu7", { to_email: email, passcode: generatedOTP })
+            .then(() => { 
                 document.getElementById('infoStep').style.display = 'none'; 
                 document.getElementById('otpStep').style.display = 'block'; 
             });
@@ -245,50 +261,78 @@
             }
         }
 
+        // --- MENU RENDERING ---
+        // We separate rendering so we can update the buttons instantly when cart changes
+        function renderMenu() {
+            const container = document.getElementById('menu-container'); 
+            container.innerHTML = '';
+            const categories = ["Lunch", "Snacks", "Beverages", "Icecream"];
+            
+            categories.forEach(cat => {
+                let items = Object.keys(menuDataCache).filter(k => menuDataCache[k].category === cat);
+                
+                if (items.length > 0) {
+                    container.innerHTML += `<h2 class="category-header">${cat}</h2>`;
+                    
+                    items.forEach(k => {
+                        let item = menuDataCache[k];
+                        let isP = parcelSelections[k] || false;
+                        let price = isP ? item.price + 10 : item.price;
+                        let itemID = isP ? k + "_P" : k;
+                        
+                        let currentQty = cart[itemID] ? cart[itemID].quantity : 0;
+                        
+                        // PARCEL CHECKBOX
+                        let parcelHTML = item.allowParcel ? 
+                            `<label class="parcel-box"><input type="checkbox" onchange="toggleParcel('${k}', this.checked)" ${isP ? 'checked' : ''}> 🥡 Parcel (+₹10)</label>` 
+                            : '';
+
+                        // BUTTON LOGIC: Changes to "- 1 +" if item is in cart
+                        let buttonHTML = '';
+                        if (currentQty === 0) {
+                            buttonHTML = `<button class="btn-add" style="margin-top:auto;" onclick="addToCart('${item.name}', ${price}, '${k}', ${isP})">Add</button>`;
+                        } else {
+                            buttonHTML = `
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:auto; background:#e5e7eb; border-radius:6px; padding:5px;">
+                                    <button class="qty-btn" style="background:#ef4444; color:white; width:35px; height:35px; font-size:18px;" onclick="updateQty('${itemID}', -1)">-</button>
+                                    <span style="font-weight:bold; font-size:18px;">${currentQty}</span>
+                                    <button class="qty-btn" style="background:#10b981; color:white; width:35px; height:35px; font-size:18px;" onclick="updateQty('${itemID}', 1)">+</button>
+                                </div>`;
+                        }
+
+                        container.innerHTML += `
+                            <div class="card">
+                                <h3>${item.name}</h3>
+                                <p class="price">₹${price}</p>
+                                ${parcelHTML}
+                                ${buttonHTML}
+                            </div>`;
+                    });
+                }
+            });
+        }
+
+        function toggleParcel(key, isChecked) {
+            parcelSelections[key] = isChecked;
+            renderMenu(); // Redraws menu instantly to update prices
+        }
+
         // --- FIREBASE SYNC ---
         function syncCanteen() {
-            // Sync Status
+            // Sync Open/Closed Status
             db.ref('canteenStatus').on('value', snap => {
                 let open = snap.val() === 'open';
                 document.getElementById('activeApp').style.display = open ? 'block' : 'none';
                 document.getElementById('closedScreen').style.display = open ? 'none' : 'block';
             });
 
-            // Sync Menu & Categories
+            // Fetch and Store Menu Data
             db.ref('canteenMenu').on('value', snap => {
-                const container = document.getElementById('menu-container'); 
-                container.innerHTML = '';
-                const data = snap.val() || {};
-                const categories = ["Lunch", "Snacks", "Beverages", "Icecream"];
-                
-                categories.forEach(cat => {
-                    let items = Object.keys(data).filter(k => data[k].category === cat);
-                    
-                    if (items.length > 0) {
-                        container.innerHTML += `<h2 class="category-header">${cat}</h2>`;
-                        
-                        items.forEach(k => {
-                            let item = data[k];
-                            let isParcel = parcelSelections[k] || false;
-                            let price = isParcel ? item.price + 10 : item.price;
-                            
-                            let parcelHTML = item.allowParcel ? 
-                                `<label><input type="checkbox" onchange="parcelSelections['${k}']=this.checked; syncCanteen()"> Parcel (+10)</label>` 
-                                : '';
-
-                            container.innerHTML += `
-                                <div class="card">
-                                    <h3>${item.name}</h3>
-                                    <p class="price">₹${price}</p>
-                                    ${parcelHTML}
-                                    <button class="btn-add" style="margin-top: 10px;" onclick="addToCart('${item.name}', ${price}, '${k}', ${isParcel})">Add</button>
-                                </div>`;
-                        });
-                    }
-                });
+                menuDataCache = snap.val() || {};
+                renderMenu();
             });
 
-            // Sync User Orders
+            // Sync Live Orders & Trigger Alerts
             db.ref('orders').on('value', snap => {
                 const list = document.getElementById('myOrderStatus'); 
                 list.innerHTML = '';
@@ -297,11 +341,34 @@
                 
                 Object.values(data).forEach(o => {
                     if (o.mobile === myMobile) {
+                        
+                        // POP-UP LOGIC: Triggers when Seller changes status
+                        if (knownOrders[o.id] && knownOrders[o.id] !== o.status) {
+                            if (o.status === 'ready') {
+                                alert(`🔔 ALERT: Your Order #${o.id} is READY for pickup!`);
+                            }
+                        }
+                        knownOrders[o.id] = o.status;
+
                         list.innerHTML += `
                             <div style="padding:10px; background:#f0f7ff; border-radius:8px; margin-bottom:5px;">
                                 <strong>Order #${o.id}</strong>: 
                                 <span style="color:#2563eb; font-weight:bold;">${o.status.toUpperCase()}</span>
                             </div>`;
+                    }
+                });
+            });
+
+            // Sync Completed Orders for Pop-Up
+            db.ref('completedOrders').on('value', snap => {
+                const data = snap.val() || {};
+                const myMobile = localStorage.getItem('userMobile');
+                Object.values(data).forEach(o => {
+                    if (o.mobile === myMobile) {
+                        if (knownOrders[o.id] && knownOrders[o.id] !== 'completed') {
+                            alert(`✅ ALERT: Your Order #${o.id} is COMPLETE!`);
+                        }
+                        knownOrders[o.id] = 'completed';
                     }
                 });
             });
@@ -334,6 +401,7 @@
             });
             
             document.getElementById('cartTotalDisplay').innerText = `${total} (${count} items)`;
+            renderMenu(); // Refreshes the "- 1 +" buttons on the cards
         }
 
         function openCart() {
@@ -346,12 +414,12 @@
                 total += (i.price * i.quantity);
                 
                 list.innerHTML += `
-                    <div style="display:flex; justify-content:space-between; margin-bottom:10px; padding: 10px; border-bottom: 1px solid #eee;">
-                        <span>${i.name}</span>
-                        <div>
-                            <button class="qty-btn" onclick="updateQty('${key}', -1)">-</button> 
-                            <span style="margin: 0 10px;">${i.quantity}</span>
-                            <button class="qty-btn" onclick="updateQty('${key}', 1)">+</button>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; padding: 10px; background:#f9fafb; border-radius:8px;">
+                        <span><strong>${i.name}</strong><br><small>₹${i.price} each</small></span>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <button class="qty-btn" style="background:#ef4444; color:white; width:30px; height:30px;" onclick="updateQty('${key}', -1)">-</button> 
+                            <span style="font-weight:bold; font-size:18px;">${i.quantity}</span>
+                            <button class="qty-btn" style="background:#10b981; color:white; width:30px; height:30px;" onclick="updateQty('${key}', 1)">+</button>
                         </div>
                     </div>`;
             });
@@ -360,28 +428,33 @@
             document.getElementById('cartModal').style.display = 'flex';
         }
 
-        function updateQty(key, change) {
-            cart[key].quantity += change;
-            if (cart[key].quantity <= 0) {
-                delete cart[key];
+        function updateQty(itemID, change) {
+            cart[itemID].quantity += change;
+            if (cart[itemID].quantity <= 0) {
+                delete cart[itemID];
             }
             updateCartUI(); 
-            openCart();
+            
+            // Auto-refresh the modal if it's currently open
+            if (document.getElementById('cartModal').style.display === 'flex') {
+                openCart();
+            }
         }
 
         function closeCart() { 
             document.getElementById('cartModal').style.display = 'none'; 
         }
 
-        // --- ORDER PLACEMENT ---
+        // --- PLACE ORDER ---
         function placeOrder() {
             const items = Object.values(cart); 
             if (items.length === 0) return;
             
             let totalAmount = items.reduce((s,i) => s + (i.price * i.quantity), 0);
+            const orderId = Math.floor(1000 + Math.random() * 9000);
 
             const order = { 
-                id: Math.floor(1000 + Math.random() * 9000), 
+                id: orderId, 
                 mobile: localStorage.getItem('userMobile'), 
                 items: items, 
                 total: totalAmount, 
@@ -390,14 +463,14 @@
             };
             
             db.ref('orders').push(order).then(() => { 
-                alert("Order Placed Successfully!"); 
+                alert("Order Placed Successfully! Keep your app open to receive alerts."); 
                 cart = {}; 
                 updateCartUI(); 
                 closeCart(); 
             });
         }
 
-        // --- INITIALIZE APP ---
+        // --- APP INITIALIZATION ---
         if (localStorage.getItem('userEmail')) { 
             document.getElementById('loginScreen').style.display = 'none'; 
             document.getElementById('appWrapper').style.display = 'block'; 
