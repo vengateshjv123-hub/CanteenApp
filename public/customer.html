@@ -4,16 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QuickBite Canteen</title>
-
+    
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-
+    
     <style>
-        /* ORIGINAL CUSTOMER UI 
-           Restored exactly as per your professional design.
-        */
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             margin: 0; 
@@ -33,11 +30,6 @@
             z-index: 100; 
         }
 
-        .navbar h2 { 
-            margin: 0; 
-            font-size: 24px; 
-        }
-        
         .cart-btn { 
             background-color: white; 
             color: #2563eb; 
@@ -46,30 +38,11 @@
             border-radius: 12px; 
             font-weight: bold; 
             cursor: pointer; 
-            transition: transform 0.2s, box-shadow 0.2s; 
+            transition: 0.2s; 
             font-size: 20px; 
-            display: flex; 
-            align-items: center; 
-            gap: 8px; 
             box-shadow: 0 4px 8px rgba(0,0,0,0.2); 
         }
 
-        .cart-btn:hover { 
-            transform: scale(1.05); 
-            box-shadow: 0 6px 12px rgba(0,0,0,0.3); 
-        }
-
-        .logout-btn { 
-            background: transparent; 
-            color: white; 
-            border: 1px solid white; 
-            padding: 8px 12px; 
-            border-radius: 6px; 
-            cursor: pointer; 
-            margin-right: 15px; 
-            font-weight: bold; 
-        }
-        
         .menu-container { 
             padding: 40px; 
             display: flex; 
@@ -79,15 +52,12 @@
             max-width: 1200px; 
             margin: 0 auto; 
         }
-        
-        /* Category Header Styling */
+
         .category-header { 
             width: 100%; 
             border-bottom: 2px solid #2563eb; 
             color: #1e3a8a; 
             margin-top: 20px; 
-            margin-bottom: 5px; 
-            padding-bottom: 5px; 
             font-size: 26px; 
             text-transform: uppercase; 
         }
@@ -100,42 +70,14 @@
             width: 220px; 
             text-align: center; 
             border: 1px solid #e5e7eb; 
-            transition: transform 0.2s; 
             display: flex; 
             flex-direction: column; 
         }
 
-        .card:hover { 
-            transform: translateY(-5px); 
-        }
-
-        .card h3 { 
-            margin: 10px 0 5px; 
-            color: #1f2937; 
-        }
-
-        .card p.price { 
+        .price { 
             color: #059669; 
             font-weight: bold; 
             font-size: 20px; 
-            margin-bottom: 5px; 
-        }
-        
-        /* Parcel Selection Styling */
-        .parcel-box { 
-            background: #eff6ff; 
-            border: 1px solid #bfdbfe; 
-            padding: 8px; 
-            border-radius: 6px; 
-            margin-bottom: 15px; 
-            font-size: 14px; 
-            color: #1e3a8a; 
-            font-weight: bold; 
-            cursor: pointer; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            gap: 5px; 
         }
 
         .btn-add { 
@@ -147,10 +89,8 @@
             cursor: pointer; 
             width: 100%; 
             font-weight: bold; 
-            margin-top: auto; 
         }
 
-        /* LOGIN SCREEN STYLING */
         #loginScreen { 
             display: flex; 
             height: 100vh; 
@@ -164,23 +104,10 @@
             padding: 40px; 
             border-radius: 12px; 
             box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
-            width: 90%; 
-            max-width: 400px; 
+            width: 350px; 
             text-align: center; 
         }
 
-        .login-input { 
-            width: 100%; 
-            padding: 15px; 
-            border: 2px solid #bfdbfe; 
-            border-radius: 8px; 
-            font-size: 16px; 
-            margin-bottom: 15px; 
-            box-sizing: border-box; 
-            text-align: center; 
-        }
-
-        /* MODAL OVERLAYS */
         .modal { 
             display: none; 
             position: fixed; 
@@ -204,15 +131,22 @@
             overflow-y: auto; 
         }
 
-        #closedScreen { 
-            display: none; 
-            text-align: center; 
-            padding: 100px 20px; 
+        .qty-btn { 
+            background: #e5e7eb; 
+            border: none; 
+            padding: 5px 10px; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            font-weight: bold; 
         }
 
-        #closedScreen h1 { 
-            color: #ef4444; 
-            font-size: 36px; 
+        .status-tracker { 
+            background: #fff; 
+            padding: 20px; 
+            margin: 20px auto; 
+            max-width: 800px; 
+            border-radius: 12px; 
+            border: 1px solid #e5e7eb; 
         }
     </style>
 </head>
@@ -220,94 +154,84 @@
 
     <div id="loginScreen">
         <div class="login-card" id="infoStep">
-            <h1 style="font-size: 40px;">🍔</h1>
-            <h2 style="color: #1e3a8a;">QuickBite Canteen</h2>
-            <p style="color: #6b7280; margin-bottom: 20px;">Enter details to receive your verification code.</p>
+            <h1>🍔</h1>
+            <h2>QuickBite Canteen</h2>
             
-            <input type="email" id="emailInput" class="login-input" placeholder="Email Address">
-            <input type="tel" id="mobileInput" class="login-input" placeholder="10-Digit Mobile No." maxlength="10">
+            <input type="email" id="emailInput" style="width:100%; padding:12px; margin-bottom:15px; border:1px solid #ddd; border-radius:8px;" placeholder="Email">
+            <input type="tel" id="mobileInput" style="width:100%; padding:12px; margin-bottom:15px; border:1px solid #ddd; border-radius:8px;" placeholder="10-Digit Mobile" maxlength="10">
             
-            <button class="btn-add" id="sendBtn" style="padding:15px; font-size:18px;" onclick="sendOTP()">Send OTP</button>
+            <button class="btn-add" style="padding:15px;" onclick="sendOTP()">Send OTP</button>
         </div>
-
+        
         <div class="login-card" id="otpStep" style="display: none;">
-            <h1 style="font-size: 40px;">✉️</h1>
-            <h2>Verify Email</h2>
-            <p style="color: #6b7280; margin-bottom: 25px;">Enter the 4-digit code sent to your email.</p>
-            <input type="text" id="otpInput" class="login-input" placeholder="----" maxlength="4">
-            <button class="btn-add" style="padding:15px; font-size:18px;" onclick="verifyOTP()">Verify & Login</button>
-            <button style="background:none; border:none; color:#2563eb; margin-top:15px; cursor:pointer;" onclick="goBack()">Change Details</button>
+            <h2>Verify Code</h2>
+            <input type="text" id="otpInput" style="width:100%; padding:12px; margin-bottom:20px; text-align:center; font-size:24px; border:1px solid #ddd; border-radius:8px;" placeholder="----" maxlength="4">
+            <button class="btn-add" style="padding:15px;" onclick="verifyOTP()">Verify & Login</button>
         </div>
     </div>
 
     <div id="appWrapper" style="display: none;">
         <div class="navbar">
-            <h2>🍔 QuickBite Canteen</h2>
-            <div style="display: flex; align-items: center;">
-                <button class="logout-btn" onclick="logout()">Logout</button>
-                <button class="cart-btn" onclick="openCart()">🛒 Cart (₹<span id="cartTotalDisplay">0</span>)</button>
-            </div>
+            <h2>🍔 QuickBite</h2>
+            <button class="cart-btn" onclick="openCart()">🛒 ₹<span id="cartTotalDisplay">0</span> (0 items)</button>
         </div>
-
+        
         <div id="activeApp">
             <div class="menu-container" id="menu-container"></div>
+            <div class="status-tracker">
+                <h3 style="margin-top:0;">📋 My Recent Orders</h3>
+                <div id="myOrderStatus">No active orders.</div>
+            </div>
         </div>
-
-        <div id="closedScreen">
-            <h1>🛑 Canteen is Closed</h1>
-            <p>The seller is not accepting orders right now. Please check back later!</p>
+        
+        <div id="closedScreen" style="display:none; text-align:center; padding:100px;">
+            <h1>🛑 Canteen Closed</h1>
         </div>
     </div>
 
     <div id="cartModal" class="modal">
         <div class="modal-content">
-            <h2 style="margin-top: 0; border-bottom: 2px solid #eee; padding-bottom:10px;">Your Cart</h2>
-            <div id="cartItemsList" style="margin-top: 20px;"></div>
-            <h3 id="modalTotal" style="text-align: right; border-top: 2px solid #eee; padding-top:15px; margin-top:15px;">Total: ₹0</h3>
-            
-            <button class="btn-add" style="background:#10b981; padding:15px; font-size:18px;" onclick="placeOrder()">Confirm & Place Order</button>
-            <button class="btn-add" style="background:#6b7280; margin-top:10px;" onclick="closeCart()">Continue Shopping</button>
+            <h2 style="margin-top:0;">Your Cart</h2>
+            <div id="cartItemsList"></div>
+            <h3 id="modalTotal" style="text-align:right; border-top:1px solid #eee; padding-top:10px;">Total: ₹0</h3>
+            <button class="btn-add" style="background:#10b981; padding:15px; font-size:18px;" onclick="placeOrder()">Confirm Order</button>
+            <button class="btn-add" style="background:#6b7280; margin-top:10px;" onclick="closeCart()">Close</button>
         </div>
     </div>
 
     <script>
-        // --- Firebase Real-Time Configuration ---
+        // --- FIREBASE CONFIGURATION ---
         const firebaseConfig = { 
             databaseURL: "https://quickbite-canteen-default-rtdb.firebaseio.com/" 
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-
-        // --- EmailJS OTP Configuration ---
+        
+        // --- EMAILJS CONFIGURATION ---
         emailjs.init("wUfYYvhMWJmnQ5FCs");
 
         let generatedOTP = "";
-        let cart = [];
+        let cart = {}; // Object to handle grouped items
         let parcelSelections = {};
 
-        // --- 🔐 AUTHENTICATION LOGIC ---
+        // --- AUTHENTICATION ---
         function sendOTP() {
-            const email = document.getElementById('emailInput').value;
-            const mobile = document.getElementById('mobileInput').value;
-
-            // Strict Validation
-            if (!email.includes('@')) { alert("Please enter a valid email address."); return; }
-            if (mobile.length !== 10) { alert("Mobile number must be exactly 10 digits."); return; }
-
+            let email = document.getElementById('emailInput').value;
+            let mobile = document.getElementById('mobileInput').value;
+            
+            if (!email.includes('@') || mobile.length !== 10) { 
+                alert("Invalid details"); 
+                return; 
+            }
+            
             generatedOTP = Math.floor(1000 + Math.random() * 9000).toString();
             
-            const btn = document.getElementById('sendBtn');
-            btn.innerText = "Sending code..."; 
-            btn.disabled = true;
-
             emailjs.send("service_uzeknsj", "template_5cxhvu7", { 
                 to_email: email, 
                 passcode: generatedOTP 
-            }).then(() => {
-                btn.innerText = "Send OTP"; 
-                btn.disabled = false;
-                document.getElementById('infoStep').style.display = 'none';
-                document.getElementById('otpStep').style.display = 'block';
+            }).then(() => { 
+                document.getElementById('infoStep').style.display = 'none'; 
+                document.getElementById('otpStep').style.display = 'block'; 
             });
         }
 
@@ -315,159 +239,169 @@
             if (document.getElementById('otpInput').value === generatedOTP) {
                 localStorage.setItem('userEmail', document.getElementById('emailInput').value);
                 localStorage.setItem('userMobile', document.getElementById('mobileInput').value);
-                location.reload(); // Refresh to enter the app
+                location.reload();
             } else {
-                alert("Incorrect verification code. Please try again.");
+                alert("Incorrect OTP");
             }
         }
 
-        function logout() {
-            localStorage.clear();
-            location.reload();
-        }
-
-        function goBack() {
-            document.getElementById('infoStep').style.display = 'block';
-            document.getElementById('otpStep').style.display = 'none';
-        }
-
-        // --- 🔄 FIREBASE REAL-TIME SYNC ---
+        // --- FIREBASE SYNC ---
         function syncCanteen() {
-            // Watch Global Canteen Status
+            // Sync Status
             db.ref('canteenStatus').on('value', snap => {
-                let isOpen = snap.val() === 'open';
-                document.getElementById('activeApp').style.display = isOpen ? 'block' : 'none';
-                document.getElementById('closedScreen').style.display = isOpen ? 'none' : 'block';
+                let open = snap.val() === 'open';
+                document.getElementById('activeApp').style.display = open ? 'block' : 'none';
+                document.getElementById('closedScreen').style.display = open ? 'none' : 'block';
             });
 
-            // Watch Menu and Handle Categories
+            // Sync Menu & Categories
             db.ref('canteenMenu').on('value', snap => {
-                const container = document.getElementById('menu-container');
+                const container = document.getElementById('menu-container'); 
                 container.innerHTML = '';
                 const data = snap.val() || {};
-                
-                // Professional Category Grouping
                 const categories = ["Lunch", "Snacks", "Beverages", "Icecream"];
-
+                
                 categories.forEach(cat => {
-                    let catItems = Object.keys(data).filter(k => data[k].category === cat);
-                    if (catItems.length > 0) {
-                        // Category Header
+                    let items = Object.keys(data).filter(k => data[k].category === cat);
+                    
+                    if (items.length > 0) {
                         container.innerHTML += `<h2 class="category-header">${cat}</h2>`;
                         
-                        catItems.forEach(key => {
-                            let item = data[key];
-                            let isParcel = parcelSelections[key] || false;
-                            let currentPrice = isParcel ? item.price + 10 : item.price;
+                        items.forEach(k => {
+                            let item = data[k];
+                            let isParcel = parcelSelections[k] || false;
+                            let price = isParcel ? item.price + 10 : item.price;
                             
+                            let parcelHTML = item.allowParcel ? 
+                                `<label><input type="checkbox" onchange="parcelSelections['${k}']=this.checked; syncCanteen()"> Parcel (+10)</label>` 
+                                : '';
+
                             container.innerHTML += `
                                 <div class="card">
                                     <h3>${item.name}</h3>
-                                    <p class="price">₹${currentPrice}</p>
-                                    
-                                    ${item.allowParcel ? `
-                                        <label class="parcel-box">
-                                            <input type="checkbox" onchange="toggleParcel('${key}', this.checked)" ${isParcel ? 'checked' : ''}> 🥡 Parcel (+₹10)
-                                        </label>` : ''}
-                                    
-                                    <button class="btn-add" onclick="addToCart('${item.name}', ${currentPrice}, '${key}', ${isParcel})">Add to Cart</button>
+                                    <p class="price">₹${price}</p>
+                                    ${parcelHTML}
+                                    <button class="btn-add" style="margin-top: 10px;" onclick="addToCart('${item.name}', ${price}, '${k}', ${isParcel})">Add</button>
                                 </div>`;
                         });
                     }
                 });
             });
+
+            // Sync User Orders
+            db.ref('orders').on('value', snap => {
+                const list = document.getElementById('myOrderStatus'); 
+                list.innerHTML = '';
+                const data = snap.val() || {};
+                const myMobile = localStorage.getItem('userMobile');
+                
+                Object.values(data).forEach(o => {
+                    if (o.mobile === myMobile) {
+                        list.innerHTML += `
+                            <div style="padding:10px; background:#f0f7ff; border-radius:8px; margin-bottom:5px;">
+                                <strong>Order #${o.id}</strong>: 
+                                <span style="color:#2563eb; font-weight:bold;">${o.status.toUpperCase()}</span>
+                            </div>`;
+                    }
+                });
+            });
         }
 
-        function toggleParcel(key, isChecked) {
-            parcelSelections[key] = isChecked;
-            syncCanteen(); // Refresh display prices
-        }
-
-        // --- 🛒 CART LOGIC ---
+        // --- CART LOGIC ---
         function addToCart(name, price, baseKey, isParcel) {
-            const displayName = isParcel ? name + " (Parcel)" : name;
-            cart.push({ name: displayName, price: price, baseKey: baseKey });
-            updateCartDisplay();
+            const itemID = isParcel ? baseKey + "_P" : baseKey;
+            
+            if (cart[itemID]) {
+                cart[itemID].quantity += 1;
+            } else {
+                cart[itemID] = { 
+                    name: isParcel ? name + " (Parcel)" : name, 
+                    price: price, 
+                    baseKey: baseKey, 
+                    quantity: 1 
+                };
+            }
+            updateCartUI();
         }
 
-        function updateCartDisplay() {
-            let total = cart.reduce((sum, item) => sum + item.price, 0);
-            document.getElementById('cartTotalDisplay').innerText = total;
+        function updateCartUI() {
+            let total = 0;
+            let count = 0;
+            
+            Object.values(cart).forEach(i => { 
+                total += (i.price * i.quantity); 
+                count += i.quantity; 
+            });
+            
+            document.getElementById('cartTotalDisplay').innerText = `${total} (${count} items)`;
         }
 
         function openCart() {
-            const list = document.getElementById('cartItemsList');
-            list.innerHTML = '';
+            const list = document.getElementById('cartItemsList'); 
+            list.innerHTML = ''; 
             let total = 0;
-
-            if (cart.length === 0) {
-                list.innerHTML = '<p style="color:#6b7280; text-align:center;">Your cart is empty.</p>';
-            } else {
-                cart.forEach((item, index) => {
-                    total += item.price;
-                    list.innerHTML += `
-                        <div style="display:flex; justify-content:space-between; margin-bottom:15px; background:#f9fafb; padding:10px; border-radius:8px;">
-                            <span><strong>${item.name}</strong><br><small>₹${item.price}</small></span>
-                            <button onclick="removeItem(${index})" style="color:#ef4444; background:none; border:none; cursor:pointer; font-weight:bold;">Remove</button>
-                        </div>`;
-                });
-            }
             
-            document.getElementById('modalTotal').innerText = "Total Payable: ₹" + total;
+            Object.keys(cart).forEach(key => {
+                let i = cart[key]; 
+                total += (i.price * i.quantity);
+                
+                list.innerHTML += `
+                    <div style="display:flex; justify-content:space-between; margin-bottom:10px; padding: 10px; border-bottom: 1px solid #eee;">
+                        <span>${i.name}</span>
+                        <div>
+                            <button class="qty-btn" onclick="updateQty('${key}', -1)">-</button> 
+                            <span style="margin: 0 10px;">${i.quantity}</span>
+                            <button class="qty-btn" onclick="updateQty('${key}', 1)">+</button>
+                        </div>
+                    </div>`;
+            });
+            
+            document.getElementById('modalTotal').innerText = "Total: ₹" + total;
             document.getElementById('cartModal').style.display = 'flex';
         }
 
-        function removeItem(index) {
-            cart.splice(index, 1);
-            updateCartDisplay();
-            openCart(); // Refresh modal
+        function updateQty(key, change) {
+            cart[key].quantity += change;
+            if (cart[key].quantity <= 0) {
+                delete cart[key];
+            }
+            updateCartUI(); 
+            openCart();
         }
 
         function closeCart() { 
             document.getElementById('cartModal').style.display = 'none'; 
         }
 
-        // --- 📤 ORDER PLACEMENT ---
+        // --- ORDER PLACEMENT ---
         function placeOrder() {
-            if (cart.length === 0) {
-                alert("Your cart is empty!");
-                return;
-            }
+            const items = Object.values(cart); 
+            if (items.length === 0) return;
             
-            const orderId = Math.floor(1000 + Math.random() * 9000);
-            const totalAmount = cart.reduce((sum, item) => sum + item.price, 0);
+            let totalAmount = items.reduce((s,i) => s + (i.price * i.quantity), 0);
 
-            const orderData = {
-                id: orderId,
-                mobile: localStorage.getItem('userMobile'),
-                items: cart,
-                total: totalAmount,
-                status: 'pending',
-                timePlaced: new Date().toLocaleTimeString()
+            const order = { 
+                id: Math.floor(1000 + Math.random() * 9000), 
+                mobile: localStorage.getItem('userMobile'), 
+                items: items, 
+                total: totalAmount, 
+                status: 'pending', 
+                timePlaced: new Date().toLocaleTimeString() 
             };
-
-            // Transactional Stock Update
-            cart.forEach(cartItem => {
-                db.ref(`canteenMenu/${cartItem.baseKey}/stock`).transaction(currentStock => {
-                    if (currentStock === null) return 999; // Unlimited stock
-                    return (currentStock > 0) ? currentStock - 1 : 0;
-                });
-            });
-
-            // Push Order to Cloud
-            db.ref('orders').push(orderData).then(() => {
-                alert("Order #" + orderId + " has been placed! Please proceed to the counter for pickup.");
-                cart = [];
-                updateCartDisplay();
-                closeCart();
+            
+            db.ref('orders').push(order).then(() => { 
+                alert("Order Placed Successfully!"); 
+                cart = {}; 
+                updateCartUI(); 
+                closeCart(); 
             });
         }
 
-        // --- 🚀 APP INITIALIZATION ---
-        if (localStorage.getItem('userEmail')) {
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('appWrapper').style.display = 'block';
-            syncCanteen();
+        // --- INITIALIZE APP ---
+        if (localStorage.getItem('userEmail')) { 
+            document.getElementById('loginScreen').style.display = 'none'; 
+            document.getElementById('appWrapper').style.display = 'block'; 
+            syncCanteen(); 
         }
     </script>
 </body>
