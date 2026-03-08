@@ -9,6 +9,9 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <style>
+        /* ORIGINAL UI STYLING 
+           Restored exactly as per your first professional design.
+        */
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             margin: 0; 
@@ -53,8 +56,15 @@
             transition: 0.3s; 
         }
 
-        .btn-start { background-color: #10b981; color: white; }
-        .btn-stop { background-color: #ef4444; color: white; }
+        .btn-start { 
+            background-color: #10b981; 
+            color: white; 
+        }
+
+        .btn-stop { 
+            background-color: #ef4444; 
+            color: white; 
+        }
 
         .logout-btn { 
             background: transparent; 
@@ -66,6 +76,10 @@
             font-weight: bold; 
             margin-right: 10px; 
             transition: 0.3s; 
+        }
+
+        .logout-btn:hover { 
+            background: rgba(255,255,255,0.2); 
         }
 
         .tab-container { 
@@ -82,6 +96,10 @@
             color: #6b7280; 
             border-bottom: 3px solid transparent; 
             transition: 0.3s; 
+        }
+
+        .tab:hover { 
+            color: #059669; 
         }
 
         .tab.active { 
@@ -126,9 +144,25 @@
             padding-bottom: 10px; 
         }
         
-        .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #4b5563; }
-        .input-group input, .input-group select { width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; box-sizing: border-box; }
+        .input-group { 
+            margin-bottom: 15px; 
+        }
+
+        .input-group label { 
+            display: block; 
+            margin-bottom: 5px; 
+            font-weight: bold; 
+            color: #4b5563; 
+        }
+
+        .input-group input, 
+        .input-group select { 
+            width: 100%; 
+            padding: 10px; 
+            border: 1px solid #d1d5db; 
+            border-radius: 6px; 
+            box-sizing: border-box; 
+        }
         
         .publish-btn { 
             background-color: #059669; 
@@ -140,6 +174,7 @@
             width: 100%; 
             font-weight: bold; 
             font-size: 16px; 
+            margin-top: 5px; 
         }
 
         .quick-add-btn { 
@@ -164,9 +199,40 @@
             width: 18px; 
             height: 18px; 
             font-size: 10px; 
+            cursor: pointer; 
             display: flex; 
             justify-content: center; 
             align-items: center; 
+            padding: 0; 
+        }
+
+        .delete-btn { 
+            background-color: #ef4444; 
+            color: white; 
+            border: none; 
+            padding: 5px 10px; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            font-size: 12px; 
+        }
+        
+        .inline-input { 
+            width: 60px; 
+            padding: 4px 8px; 
+            border: 1px solid #d1d5db; 
+            border-radius: 4px; 
+            text-align: center; 
+            font-weight: bold; 
+            color: #1f2937; 
+        }
+
+        .inline-input:focus { 
+            outline: 2px solid #059669; 
+            border-color: transparent; 
+        }
+
+        .stock-input { 
+            width: 70px; 
         }
 
         .list-item { 
@@ -176,7 +242,7 @@
             border-bottom: 1px solid #e5e7eb; 
             padding: 15px 0; 
         }
-
+        
         .order-card { 
             padding: 15px; 
             border-radius: 8px; 
@@ -185,24 +251,51 @@
             transition: 0.3s; 
         }
 
-        .order-pending { background: #fffbeb; border-color: #fde68a; } 
-        .order-ready { background: #ecfdf5; border-color: #6ee7b7; }   
+        .order-pending { 
+            background: #fffbeb; 
+            border-color: #fde68a; 
+        } 
+
+        .order-ready { 
+            background: #ecfdf5; 
+            border-color: #6ee7b7; 
+        }   
         
         .action-btn { 
-            padding: 10px 15px; 
+            padding: 12px; 
             border: none; 
             border-radius: 6px; 
             font-weight: bold; 
             cursor: pointer; 
             font-size: 14px; 
+            transition: 0.2s; 
         }
 
-        .inline-input { 
-            width: 60px; 
-            padding: 4px; 
-            border: 1px solid #d1d5db; 
-            border-radius: 4px; 
-            text-align: center; 
+        .btn-mark-ready { 
+            background-color: #3b82f6; 
+            color: white; 
+        }
+
+        .btn-mark-ready:hover { 
+            background-color: #2563eb; 
+        }
+
+        .btn-mark-complete { 
+            background-color: #10b981; 
+            color: white; 
+        }
+
+        .btn-mark-complete:hover { 
+            background-color: #059669; 
+        }
+
+        .btn-cancel { 
+            background-color: #ef4444; 
+            color: white; 
+        }
+
+        .btn-cancel:hover { 
+            background-color: #dc2626; 
         }
 
         .modal { 
@@ -224,10 +317,27 @@
             border-radius: 12px; 
             width: 90%; 
             max-width: 500px; 
+            box-shadow: 0 10px 15px rgba(0,0,0,0.1); 
             max-height: 80vh; 
             overflow-y: auto; 
         }
 
+        .setup-item { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 10px 0; 
+            border-bottom: 1px solid #e5e7eb; 
+        }
+
+        .setup-input { 
+            width: 100px; 
+            padding: 8px; 
+            border: 1px solid #d1d5db; 
+            border-radius: 6px; 
+        }
+
+        /* ADMIN LOGIN STYLES */
         #adminLoginScreen { 
             display: flex; 
             height: 100vh; 
@@ -247,8 +357,56 @@
             border-top: 6px solid #059669; 
         }
 
-        .cat-badge { font-size: 12px; background: #e5e7eb; padding: 2px 6px; border-radius: 4px; color: #4b5563; }
-        .parcel-badge { font-size: 12px; background: #dbeafe; padding: 2px 6px; border-radius: 4px; color: #1e40af; margin-left: 5px; }
+        .login-input { 
+            width: 100%; 
+            padding: 15px; 
+            border: 2px solid #a7f3d0; 
+            border-radius: 8px; 
+            font-size: 18px; 
+            text-align: center; 
+            margin-bottom: 20px; 
+            box-sizing: border-box; 
+        }
+
+        .login-input:focus { 
+            outline: none; 
+            border-color: #059669; 
+        }
+
+        .login-btn { 
+            background-color: #059669; 
+            color: white; 
+            border: none; 
+            padding: 15px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            width: 100%; 
+            font-weight: bold; 
+            font-size: 18px; 
+            transition: 0.3s; 
+        }
+
+        .login-btn:hover { 
+            background-color: #047857; 
+        }
+
+        .cat-badge { 
+            font-size: 12px; 
+            background: #e5e7eb; 
+            padding: 2px 6px; 
+            border-radius: 4px; 
+            margin-left: 5px; 
+            color: #4b5563; 
+        }
+
+        .parcel-badge { 
+            font-size: 12px; 
+            background: #dbeafe; 
+            padding: 2px 6px; 
+            border-radius: 4px; 
+            color: #1e40af; 
+            margin-left: 5px; 
+        }
     </style>
 </head>
 <body>
@@ -257,12 +415,14 @@
         <div class="login-card">
             <h1 style="margin-top: 0; font-size: 40px;">👨‍🍳</h1>
             <h2 style="color: #065f46; margin-top: 0;">Seller Gateway</h2>
-            <input type="password" id="adminPwd" style="width:100%; padding:15px; margin-bottom:20px; text-align:center; border: 2px solid #a7f3d0; border-radius:8px;" placeholder="Password">
-            <button class="publish-btn" style="padding:15px;" onclick="loginAdmin()">Login to Dashboard</button>
+            <p style="color: #6b7280; margin-bottom: 25px;">Enter your admin password to manage the canteen.</p>
+            <input type="password" id="adminPwd" class="login-input" placeholder="Enter Password" onkeypress="if(event.key === 'Enter') loginAdmin()">
+            <button class="login-btn" onclick="loginAdmin()">Login to Dashboard</button>
         </div>
     </div>
 
     <div id="dashboardWrapper" style="display: none;">
+        
         <div class="navbar">
             <div style="display: flex; align-items: center;">
                 <button class="logout-btn" onclick="logoutAdmin()">Logout</button>
@@ -281,6 +441,7 @@
         </div>
 
         <div class="dashboard-container">
+            
             <div id="ordersTab" class="tab-content active">
                 <div class="form-card">
                     <h3>Live Order Tracking</h3>
@@ -290,11 +451,14 @@
 
             <div id="completedTab" class="tab-content">
                 <div class="form-card">
-                    <h3>Current Session Revenue: ₹<span id="dailyTotal">0</span></h3>
+                    <h3>Today's Current Session</h3>
+                    <h2 style="color: #059669; margin-top: 0; border-bottom: 2px solid #e5e7eb; padding-bottom: 15px;">
+                        Current Revenue: ₹<span id="dailyTotal">0</span>
+                    </h2>
                     <div id="completedList"></div>
                 </div>
                 <div class="form-card">
-                    <h3>History (Past Sessions)</h3>
+                    <h3>Past 7 Sessions History</h3>
                     <div id="historyList"></div>
                 </div>
             </div>
@@ -303,32 +467,42 @@
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                     <div>
                         <div class="form-card">
-                            <h3>⚡ Quick Add</h3>
+                            <h3>⚡ Quick Add to Master Catalog</h3>
                             <div id="quickAddContainer"></div>
                         </div>
 
                         <div class="form-card">
                             <h3>Add Custom Item to Master</h3>
-                            <div class="input-group"><label>Item Name</label><input type="text" id="itemName" placeholder="e.g., Full Meals"></div>
-                            <div class="input-group"><label>Price (₹)</label><input type="number" id="itemPrice" placeholder="e.g., 80"></div>
+                            <div class="input-group">
+                                <label>Item Name</label>
+                                <input type="text" id="itemName" placeholder="e.g., Samosa">
+                            </div>
+                            <div class="input-group">
+                                <label>Price (₹)</label>
+                                <input type="number" id="itemPrice" placeholder="15">
+                            </div>
                             <div class="input-group">
                                 <label>Category</label>
                                 <select id="itemCategory">
                                     <option value="Lunch">Lunch</option>
-                                    <option value="Snacks">Snacks</option>
+                                    <option value="Snacks" selected>Snacks</option>
                                     <option value="Beverages">Beverages</option>
                                     <option value="Icecream">Icecream</option>
                                 </select>
                             </div>
-                            <div class="input-group"><label><input type="checkbox" id="itemParcel" style="width:auto;"> Available for Parcel (+₹10)</label></div>
-                            <div class="input-group"><label><input type="checkbox" id="saveAsQuickAdd" style="width:auto;"> Pin as Quick Add Button</label></div>
+                            <div class="input-group">
+                                <label><input type="checkbox" id="itemParcel" style="width:auto;"> Available for Parcel (+₹10)</label>
+                            </div>
+                            <div class="input-group">
+                                <label><input type="checkbox" id="saveAsQuickAdd" style="width:auto;"> Pin as Quick Add Button</label>
+                            </div>
                             <button class="publish-btn" onclick="publishItem()">Save to Master Catalog</button>
                         </div>
                     </div>
 
                     <div>
                         <div class="form-card" id="liveInventoryCard" style="display:none; border: 2px solid #10b981;">
-                            <h3 style="color:#059669;">🟢 Today's Live Stock</h3>
+                            <h3 style="color:#059669;">🟢 Today's Live Inventory</h3>
                             <div id="liveInventoryList"></div>
                         </div>
                         <div class="form-card">
@@ -339,7 +513,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> 
 
     <div id="startupModal" class="modal">
         <div class="modal-content">
@@ -351,28 +525,27 @@
     </div>
 
     <script>
-        // FIREBASE INITIALIZATION
-        const firebaseConfig = { databaseURL: "https://quickbite-canteen-default-rtdb.firebaseio.com/" };
+        // --- Firebase Cloud Connection Configuration ---
+        const firebaseConfig = { 
+            databaseURL: "https://quickbite-canteen-default-rtdb.firebaseio.com/" 
+        };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         const ADMIN_PASSWORD = "admin123";
 
         // --- 🚀 AUTO-MIGRATION ENGINE ---
+        // Automatically moves your existing items from this browser to the cloud
         function migrateLocalData() {
-            // Migrating the Master Menu
             let oldMaster = JSON.parse(localStorage.getItem('masterMenu'));
             if (oldMaster && oldMaster.length > 0) {
                 console.log("Migrating Master Catalog to Cloud...");
                 oldMaster.forEach(item => {
-                    // Ensure new properties exist for old items
                     item.category = item.category || "Snacks";
                     item.allowParcel = item.allowParcel || false;
                     db.ref('masterMenu').push(item);
                 });
-                localStorage.removeItem('masterMenu'); // Clear to prevent loops
+                localStorage.removeItem('masterMenu'); 
             }
-
-            // Migrating Quick Add Buttons
             let oldQuick = JSON.parse(localStorage.getItem('quickAddItems'));
             if (oldQuick && oldQuick.length > 0) {
                 console.log("Migrating Quick Add Buttons to Cloud...");
@@ -381,47 +554,55 @@
             }
         }
 
+        // --- Authentication & Initialization ---
         function checkAdminAuth() {
             if (localStorage.getItem('sellerAuth') === 'true') {
                 document.getElementById('adminLoginScreen').style.display = 'none';
                 document.getElementById('dashboardWrapper').style.display = 'block';
-                migrateLocalData(); // RUNS ONLY ON YOUR LAPTOP ONCE
+                migrateLocalData(); 
                 syncFirebase();
-            } else {
-                document.getElementById('adminLoginScreen').style.display = 'flex';
+            } else { 
+                document.getElementById('adminLoginScreen').style.display = 'flex'; 
             }
         }
 
-        function loginAdmin() {
-            if (document.getElementById('adminPwd').value === ADMIN_PASSWORD) {
-                localStorage.setItem('sellerAuth', 'true');
-                checkAdminAuth();
-            } else { alert("Access Denied."); }
+        function loginAdmin() { 
+            if (document.getElementById('adminPwd').value === ADMIN_PASSWORD) { 
+                localStorage.setItem('sellerAuth', 'true'); 
+                checkAdminAuth(); 
+            } else {
+                alert("Incorrect Password. Access Denied."); 
+            }
         }
 
-        function logoutAdmin() { localStorage.removeItem('sellerAuth'); location.reload(); }
+        function logoutAdmin() { 
+            localStorage.removeItem('sellerAuth'); 
+            location.reload(); 
+        }
 
         function switchTab(tabId) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            event.target.classList.add('active');
+            event.target.classList.add('active'); 
             document.getElementById(tabId).classList.add('active');
         }
 
-        // --- REAL-TIME SYNC ---
+        // --- REAL-TIME DATA SYNC ---
         function syncFirebase() {
-            // 1. Status Sync
+            // Watch Canteen Status (Open/Closed)
             db.ref('canteenStatus').on('value', snap => {
                 let status = snap.val() || 'closed';
-                document.getElementById('statusBadge').innerText = "Status: " + status.toUpperCase();
-                document.getElementById('toggleBtn').innerText = status === 'open' ? "Stop Canteen" : "Start Canteen";
-                document.getElementById('toggleBtn').className = status === 'open' ? "toggle-btn btn-stop" : "toggle-btn btn-start";
+                const badge = document.getElementById('statusBadge');
+                const btn = document.getElementById('toggleBtn');
+                badge.innerText = "Status: " + status.toUpperCase();
+                btn.innerText = status === 'open' ? "Stop Canteen" : "Start Canteen";
+                btn.className = status === 'open' ? "toggle-btn btn-stop" : "toggle-btn btn-start";
                 document.getElementById('liveInventoryCard').style.display = status === 'open' ? 'block' : 'none';
             });
 
-            // 2. Master Catalog Sync
+            // Watch Master Catalog
             db.ref('masterMenu').on('value', snap => {
-                const catalog = document.getElementById('catalogList');
+                const catalog = document.getElementById('catalogList'); 
                 catalog.innerHTML = '';
                 const data = snap.val() || {};
                 Object.keys(data).forEach(key => {
@@ -430,16 +611,17 @@
                         <div class="list-item">
                             <div>
                                 <strong>${item.name}</strong> - ₹${item.price}<br>
-                                <span class="cat-badge">${item.category}</span>
+                                <span class="cat-badge">${item.category || 'Snacks'}</span>
+                                ${item.allowParcel ? '<span class="parcel-badge">📦 Parcel</span>' : ''}
                             </div>
                             <button class="delete-btn" onclick="db.ref('masterMenu/${key}').remove()">Delete</button>
                         </div>`;
                 });
             });
 
-            // 3. Quick Add Sync
+            // Watch Quick Add Buttons
             db.ref('quickAddItems').on('value', snap => {
-                const container = document.getElementById('quickAddContainer');
+                const container = document.getElementById('quickAddContainer'); 
                 container.innerHTML = '';
                 const data = snap.val() || {};
                 Object.keys(data).forEach(key => {
@@ -452,9 +634,9 @@
                 });
             });
 
-            // 4. Live Inventory Sync
+            // Watch Live Stock Updates
             db.ref('canteenMenu').on('value', snap => {
-                const live = document.getElementById('liveInventoryList');
+                const live = document.getElementById('liveInventoryList'); 
                 live.innerHTML = '';
                 const data = snap.val() || {};
                 Object.keys(data).forEach(key => {
@@ -462,34 +644,38 @@
                     live.innerHTML += `
                         <div class="list-item">
                             <div><strong>${item.name}</strong></div>
-                            <input type="number" class="inline-input" value="${item.stock || 0}" onchange="db.ref('canteenMenu/${key}/stock').set(parseInt(this.value))">
+                            <input type="number" class="inline-input stock-input" value="${item.stock || 0}" onchange="db.ref('canteenMenu/${key}/stock').set(parseInt(this.value))">
                         </div>`;
                 });
             });
 
-            // 5. Orders Sync
+            // Watch Live Customer Orders
             db.ref('orders').on('value', snap => {
-                const list = document.getElementById('ordersList');
-                list.innerHTML = '';
+                const ordersList = document.getElementById('ordersList'); 
+                ordersList.innerHTML = '';
                 const data = snap.val() || {};
                 Object.keys(data).forEach(key => {
                     let o = data[key];
                     if (o.status === 'completed' || o.status === 'cancelled') return;
-                    list.innerHTML += `
+                    ordersList.innerHTML += `
                         <div class="order-card ${o.status === 'pending' ? 'order-pending' : 'order-ready'}">
-                            <strong>Order #${o.id}</strong><br>
-                            📞 ${o.mobile}<br>
-                            Items: ${o.items.map(i=>i.name).join(', ')}<br>
-                            Total: ₹${o.total}<br>
-                            <div style="margin-top:10px;">
-                                <button class="action-btn" style="background:#3b82f6;color:white;" onclick="db.ref('orders/${key}/status').set('ready')">🔔 Mark Ready</button>
-                                <button class="action-btn" style="background:#10b981;color:white;" onclick="completeOrder('${key}')">✅ Complete</button>
+                            <div style="display:flex; justify-content:space-between; border-bottom:1px solid #ddd; padding-bottom:5px; margin-bottom:10px;">
+                                <strong>Order #${o.id}</strong>
+                                <span style="font-size:12px;">${o.timePlaced || ''}</span>
+                            </div>
+                            📞 Customer: <strong>${o.mobile}</strong><br>
+                            Items: <strong>${o.items.map(i=>i.name).join(', ')}</strong><br>
+                            <span style="font-size:18px; color:#059669; font-weight:bold;">Total: ₹${o.total}</span>
+                            <div style="margin-top:15px; display:flex; gap:10px;">
+                                <button class="action-btn btn-mark-ready" style="flex:2;" onclick="db.ref('orders/${key}/status').set('ready')">🔔 Mark Ready</button> 
+                                <button class="action-btn btn-mark-complete" style="flex:2;" onclick="completeOrder('${key}')">✅ Complete</button>
                             </div>
                         </div>`;
                 });
             });
         }
 
+        // --- Operation Logic Functions ---
         function toggleCanteen() {
             db.ref('canteenStatus').once('value', snap => {
                 if (snap.val() !== 'open') openStartupModal();
@@ -501,14 +687,20 @@
             db.ref('masterMenu').once('value', snap => {
                 let list = ''; const data = snap.val() || {};
                 Object.keys(data).forEach(key => {
-                    list += `<div class="setup-item"><label><input type="checkbox" id="check_${key}" checked> ${data[key].name}</label><input type="number" id="stock_${key}" placeholder="Stock" style="width:80px;padding:5px;"></div>`;
+                    list += `
+                        <div class="setup-item">
+                            <label style="cursor:pointer;"><input type="checkbox" id="check_${key}" checked> ${data[key].name}</label>
+                            <input type="number" id="stock_${key}" class="setup-input" placeholder="Stock">
+                        </div>`;
                 });
                 document.getElementById('startupList').innerHTML = list;
                 document.getElementById('startupModal').style.display = 'flex';
             });
         }
 
-        function closeStartupModal() { document.getElementById('startupModal').style.display = 'none'; }
+        function closeStartupModal() { 
+            document.getElementById('startupModal').style.display = 'none'; 
+        }
 
         function confirmStartup() {
             db.ref('masterMenu').once('value', snap => {
@@ -521,7 +713,7 @@
                     }
                 });
                 db.ref('canteenMenu').set(today);
-                db.ref('orders').set(null);
+                db.ref('orders').set(null); 
                 db.ref('canteenStatus').set('open');
                 closeStartupModal();
             });
@@ -529,7 +721,8 @@
 
         function completeOrder(key) {
             db.ref(`orders/${key}`).once('value', snap => {
-                db.ref('completedOrders').push(snap.val());
+                let order = snap.val();
+                db.ref('completedOrders').push(order);
                 db.ref(`orders/${key}`).remove();
             });
         }
@@ -540,16 +733,27 @@
             let cat = document.getElementById('itemCategory').value;
             let parcel = document.getElementById('itemParcel').checked;
             let quick = document.getElementById('saveAsQuickAdd').checked;
+            
             if (name && price) {
                 let item = { name, price: parseInt(price), category: cat, allowParcel: parcel };
                 db.ref('masterMenu').push(item);
                 if (quick) db.ref('quickAddItems').push(item);
-                document.getElementById('itemName').value = ''; document.getElementById('itemPrice').value = '';
+                
+                // Clear inputs
+                document.getElementById('itemName').value = ''; 
+                document.getElementById('itemPrice').value = '';
+                document.getElementById('itemParcel').checked = false;
+                document.getElementById('saveAsQuickAdd').checked = false;
+            } else {
+                alert("Please enter both Name and Price.");
             }
         }
 
-        function quickAdd(name, price, cat, parcel) { db.ref('masterMenu').push({ name, price, category: cat, allowParcel: parcel }); }
+        function quickAdd(name, price, cat, parcel) { 
+            db.ref('masterMenu').push({ name, price, category: cat, allowParcel: parcel }); 
+        }
 
+        // Initialize Authentication on Load
         checkAdminAuth();
     </script>
 </body>
