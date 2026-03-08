@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canteen Pre-Order</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen font-sans relative">
+
+    <nav class="bg-blue-600 text-white p-4 shadow-md sticky top-0 z-40">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">🍔 QuickBite Canteen</h1>
+            <div class="font-semibold text-lg bg-blue-800 px-3 py-1 rounded" id="cart-counter">Cart: 0 items</div>
+        </div>
+    </nav>
+
+    <div id="live-order-widget" class="fixed top-20 right-4 w-80 md:w-96 bg-white rounded-xl shadow-2xl border-4 border-blue-500 p-4 z-50 hidden transition-all duration-300">
+        <h3 class="text-xl font-bold mb-3 flex justify-between items-center text-gray-800">
+            <span>🔔 Your Live Orders</span>
+            <button onclick="hideOrderWidget()" class="text-gray-400 hover:text-red-500 text-sm">Dismiss</button>
+        </h3>
+        <div id="my-orders-list" class="flex flex-col gap-3"></div>
+    </div>
+
+    <div id="closed-screen" class="container mx-auto mt-20 text-center" style="display: none;">
+        <h1 class="text-4xl font-bold text-gray-800 mb-4">🚪 The Canteen is Currently Closed</h1>
+        <p class="text-gray-500 text-lg">We are preparing today's menu. Please wait, this page will update automatically when we open!</p>
+        <div class="mt-8 animate-pulse text-blue-500 font-bold text-xl">Waiting for kitchen...</div>
+    </div>
+
+    <div id="app-container" class="container mx-auto p-4 flex flex-col md:flex-row gap-6 mt-6" style="display: none;">
+        
+        <div class="w-full md:w-2/3">
+            <h2 class="text-xl font-bold mb-4 text-gray-800">Today's Menu</h2>
+            <div id="menu-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        </div>
+
+        <div class="w-full md:w-1/3 bg-white p-6 rounded-lg shadow-md border border-gray-200 h-fit mt-6 md:mt-0">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-gray-800">Your Order</h2>
+                <button onclick="clearCart()" class="text-sm text-red-500 hover:text-red-700 hidden" id="clear-cart-btn">Clear All</button>
+            </div>
+            
+            <div id="cart-items" class="mb-4 text-gray-600"><p class="italic text-sm">Your cart is empty.</p></div>
+            
+            <div class="border-t border-gray-300 pt-4 mt-4">
+                <div class="flex justify-between font-bold text-lg mb-4"><span>Total:</span><span id="cart-total">₹0.00</span></div>
+                
+                <label class="block text-sm font-medium mb-1">Your Name:</label>
+                <input type="text" id="customer-name" class="w-full border rounded p-2 mb-4" placeholder="e.g., Rohan Kumar">
+                
+                <label class="block text-sm font-medium mb-1">Pickup Time (Optional):</label>
+                <input type="time" id="pickup-time" class="w-full border rounded p-2 mb-4" min="09:00" max="17:00">
+                <p class="text-xs text-gray-500 mb-4 -mt-2">Leave blank for ASAP, or select a time.</p>
+
+                <button onclick="checkout()" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded">Place Pre-Order</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SERVER_URL = 'http://localhost:3000';
+        let menu = []; 
+        let cart = []; 
+        let myOrderIds = []; 
+
+        async function checkCanteenStatus() {
+            try {
+                const res = await fetch(`${SERVER_URL}/api/status`);
+                const data = await res.json();
+                
+                if (data.isOpen) {
+                    document.getElementById('closed-screen').style.display = 'none';
+                    document.getElementById('app-container').style.display = 'flex';
+                    fetchMenu(); 
+                } else {
+                    document.getElementById('closed-screen').style.display = 'block';
+                    document.getElementById('app-container').style.display = 'none';
+                    cart = []; 
+                    updateCartUI();
+                }
+            } catch (err) {
+                console.log("Waiting for server...");
+            }
+        }
+
+        async function fetchMenu() {
+            const res = await fetch(`${SERVER_URL}/api/menu`);
+            menu = await res.json();
+            const container = document.getElementById('menu-container');
+            container.innerHTML = '';
+            
+            if(menu.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 italic">No items have been added to the menu yet.</p>';
+                return;
+            }
+
+            menu.forEach(item => {
+                const descHtml = item.desc ? `<p class="text-sm text-gray-500 mb-4">${item.desc}</p>` : `<div class="mb-4"></div>`;
+                container.innerHTML += `<div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col justify-between">
+                    <div><div class="flex justify-between items-center mb-2"><h3 class="font-bold text-lg">${item.name}</h3><span class="font-bold text-blue-600">₹${item.price.toFixed(2)}</span></div>
+                    ${descHtml}</div>
+                    <button onclick="addToCart(${item.id})" class="mt-auto bg-blue-100 hover:bg-blue-200 text-blue-700 font-semibold py-2 px-4 rounded">Add to Order</button>
+                </div>`;
+            });
+        }
+
+        function addToCart(itemId) { 
+            cart.push(menu.find(m => m.id === itemId)); 
+            updateCartUI(); 
+        }
+
+        // --- NEW: REMOVE FROM CART LOGIC ---
+        function removeFromCart(itemName) {
+            // Find the index of the first item that matches this name
+            const itemIndex = cart.findIndex(item => item.name === itemName);
+            
+            // If it exists, remove just that one item
+            if (itemIndex !== -1) {
+                cart.splice(itemIndex, 1);
+            }
+            updateCartUI();
+        }
+
+        function clearCart() {
+            cart = [];
+            updateCartUI();
+        }
+        
+        function updateCartUI() {
+            const cartDiv = document.getElementById('cart-items'); 
+            const totalSpan = document.getElementById('cart-total'); 
+            const counter = document.getElementById('cart-counter');
+            const clearBtn = document.getElementById('clear-cart-btn');
+
+            if (cart.length === 0) { 
+                cartDiv.innerHTML = '<p class="italic text-sm">Your cart is empty.</p>'; 
+                totalSpan.innerText = '₹0.00'; 
+                counter.innerText = 'Cart: 0 items'; 
+                clearBtn.style.display = 'none';
+                return; 
+            }
+
+            clearBtn.style.display = 'block';
+            
+            let itemCounts = {}; 
+            let total = 0;
+            
+            cart.forEach(item => { 
+                total += item.price; 
+                itemCounts[item.name] = (itemCounts[item.name] || 0) + 1; 
+            });
+            
+            // --- MODIFIED: Added the Remove button inside each cart item row ---
+            cartDiv.innerHTML = Object.entries(itemCounts).map(([name, count]) => {
+                // Escape quotes in case a menu item has an apostrophe (e.g., "Chef's Special")
+                const safeName = name.replace(/'/g, "\\'");
+                return `
+                <div class="flex justify-between items-center text-sm mb-2 border-b pb-1">
+                    <span><span class="font-bold">${count}x</span> ${name}</span>
+                    <button onclick="removeFromCart('${safeName}')" class="text-xs bg-red-100 text-red-600 hover:bg-red-200 px-2 py-1 rounded font-semibold transition">
+                        Remove
+                    </button>
+                </div>`;
+            }).join('');
+            
+            totalSpan.innerText = `₹${total.toFixed(2)}`; 
+            counter.innerText = `Cart: ${cart.length} items`;
+        }
+
+        async function checkout() {
+            const name = document.getElementById('customer-name').value; 
+            const rawTime = document.getElementById('pickup-time').value;
+
+            if (cart.length === 0) return alert("Please add items to your cart first!");
+            if (!name) return alert("Please enter your name!");
+
+            let formattedTime = "ASAP";
+            if (rawTime) {
+                const [hours, minutes] = rawTime.split(':').map(Number);
+                if (hours < 9 || (hours >= 17 && minutes > 0)) return alert("Please select a pickup time between 9:00 AM and 5:00 PM.");
+                const suffix = hours >= 12 ? 'PM' : 'AM';
+                const displayHours = hours % 12 || 12;
+                formattedTime = `${displayHours}:${minutes.toString().padStart(2, '0')} ${suffix}`;
+            }
+            
+            let itemCounts = {}; 
+            let totalAmount = 0; 
+
+            cart.forEach(item => { 
+                itemCounts[item.name] = (itemCounts[item.name] || 0) + 1; 
+                totalAmount += item.price; 
+            });
+            
+            const orderData = { 
+                customer: name, 
+                time: formattedTime, 
+                total: totalAmount, 
+                items: Object.entries(itemCounts).map(([n, c]) => `${c}x ${n}`) 
+            };
+
+            try {
+                const res = await fetch(`${SERVER_URL}/api/orders`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(orderData) });
+                const result = await res.json();
+                if (result.success) { 
+                    myOrderIds.push(result.orderId);
+                    cart = []; 
+                    document.getElementById('customer-name').value = ''; 
+                    document.getElementById('pickup-time').value = '';
+                    updateCartUI(); 
+                    
+                    document.getElementById('live-order-widget').classList.remove('hidden');
+                    document.getElementById('live-order-widget').style.display = 'block';
+                    fetchMyOrderStatus();
+                } else { 
+                    alert(result.error); 
+                } 
+            } catch (err) { alert("Error placing order."); }
+        }
+
+        async function fetchMyOrderStatus() {
+            if (myOrderIds.length === 0) return; 
+            try {
+                const res = await fetch(`${SERVER_URL}/api/orders`);
+                const allOrders = await res.json();
+                const myCurrentOrders = allOrders.filter(o => myOrderIds.includes(o.id));
+                const listDiv = document.getElementById('my-orders-list');
+                listDiv.innerHTML = '';
+                
+                myCurrentOrders.forEach(order => {
+                    let statusBgClass = order.status === 'ready' ? 'bg-green-100 border-green-500 text-green-900 animate-pulse' : 
+                                        order.status === 'preparing' ? 'bg-orange-100 border-orange-500 text-orange-900' : 
+                                        'bg-gray-100 border-gray-400 text-gray-800';
+                    let statusText = order.status === 'ready' ? '✅ READY FOR PICKUP' : 
+                                     order.status === 'preparing' ? '🔥 Preparing...' : '📦 Picked Up';
+                    
+                    listDiv.innerHTML += `
+                        <div class="p-3 border-l-8 rounded shadow-sm ${statusBgClass}">
+                            <div class="flex justify-between font-extrabold text-lg mb-1"><span>${order.id}</span><span>${statusText}</span></div>
+                            <div class="text-sm font-semibold">Pickup Time: ${order.time}</div>
+                        </div>
+                    `;
+                });
+                myOrderIds = myOrderIds.filter(id => myCurrentOrders.some(o => o.id === id && o.status !== 'completed'));
+                if (myOrderIds.length === 0) hideOrderWidget();
+            } catch (err) { console.log("Error fetching live order status."); }
+        }
+
+        function hideOrderWidget() { document.getElementById('live-order-widget').style.display = 'none'; }
+
+        checkCanteenStatus();
+        setInterval(checkCanteenStatus, 3000);
+        setInterval(fetchMyOrderStatus, 3000);
+    </script>
+</body>
+</html>

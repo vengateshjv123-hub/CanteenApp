@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canteen Kitchen & Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen font-sans">
+
+    <nav class="bg-gray-800 text-white shadow-md">
+        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center p-4">
+            <div class="flex items-center gap-4 mb-4 md:mb-0">
+                <h1 class="text-2xl font-bold">👨‍🍳 Kitchen & Admin</h1>
+                <div class="space-x-2">
+                    <button onclick="switchTab('orders')" id="btn-orders" class="bg-blue-600 px-4 py-2 rounded font-semibold transition">Live Orders</button>
+                    <button onclick="switchTab('menu')" id="btn-menu" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded font-semibold transition">Manage Menu</button>
+                </div>
+            </div>
+            
+            <button id="master-switch" onclick="toggleCanteen()" class="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-full font-bold shadow-lg transition transform hover:scale-105">
+                ▶ START CANTEEN
+            </button>
+        </div>
+    </nav>
+
+    <div id="view-orders" class="container mx-auto p-4 flex flex-col md:flex-row gap-6 mt-4" style="display: flex;">
+        <div class="w-full md:w-1/2">
+            <div class="bg-orange-500 text-white p-3 rounded-t-lg font-bold flex justify-between">
+                <span>🔥 Preparing</span><span id="prep-count" class="bg-white text-orange-500 px-2 rounded-full">0</span>
+            </div>
+            <div id="preparing-list" class="bg-white border-x border-b border-gray-200 rounded-b-lg p-4 min-h-[500px] flex flex-col gap-4"></div>
+        </div>
+        <div class="w-full md:w-1/2">
+            <div class="bg-green-500 text-white p-3 rounded-t-lg font-bold flex justify-between">
+                <span>✅ Ready for Pickup</span><span id="ready-count" class="bg-white text-green-500 px-2 rounded-full">0</span>
+            </div>
+            <div id="ready-list" class="bg-white border-x border-b border-gray-200 rounded-b-lg p-4 min-h-[500px] flex flex-col gap-4"></div>
+        </div>
+    </div>
+
+    <div id="view-menu" class="container mx-auto p-4 mt-4" style="display: none;">
+        <div class="flex flex-col md:flex-row gap-6">
+            
+            <div class="w-full md:w-1/3 flex flex-col gap-6">
+                
+                <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200 h-fit">
+                    <h2 class="text-xl font-bold mb-4 text-gray-800">Quick Add Catalog</h2>
+                    <p class="text-sm text-gray-500 mb-3">Check items to instantly push them to today's live menu.</p>
+                    <div id="master-catalog-list" class="flex flex-col gap-2 max-h-64 overflow-y-auto pr-2">
+                        </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200 h-fit">
+                    <h2 class="text-xl font-bold mb-4">Add Custom Item</h2>
+                    <form id="add-item-form" onsubmit="addMenuItem(event)">
+                        <div class="mb-4"><label class="block text-sm font-medium mb-1">Name</label><input type="text" id="new-name" required class="w-full border rounded p-2"></div>
+                        <div class="mb-4"><label class="block text-sm font-medium mb-1">Price (₹)</label><input type="number" id="new-price" required class="w-full border rounded p-2"></div>
+                        <div class="mb-4"><label class="block text-sm font-medium mb-1">Description (Optional)</label><textarea id="new-desc" class="w-full border rounded p-2"></textarea></div>
+                        
+                        <div class="mb-4 flex items-center gap-2">
+                            <input type="checkbox" id="save-to-catalog" class="w-4 h-4 text-blue-600 rounded cursor-pointer" checked>
+                            <label for="save-to-catalog" class="text-sm text-gray-700 font-medium cursor-pointer">Save to Quick Add Catalog for tomorrow</label>
+                        </div>
+
+                        <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded">Push to Live Menu</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="w-full md:w-2/3">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold text-green-700">🟢 Today's Live Menu</h2>
+                    <button onclick="clearEntireMenu()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded font-bold text-sm">
+                        🗑 WIPE ENTIRE MENU
+                    </button>
+                </div>
+                <div class="bg-white rounded-lg shadow-md border overflow-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead><tr class="bg-gray-100 border-b"><th class="p-4">Item Name</th><th class="p-4">Price</th><th class="p-4">Actions</th></tr></thead>
+                        <tbody id="menu-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SERVER_URL = 'http://localhost:3000';
+        let orders = []; 
+        let menu = []; 
+        let isCanteenOpen = false;
+
+        const defaultCatalog = [
+            { id: 'm1', name: 'Samosa', price: 15, desc: 'Crispy potato pastry' },
+            { id: 'm2', name: 'Egg Puffs', price: 25, desc: 'Flaky pastry with boiled egg' },
+            { id: 'm3', name: 'Veg Puffs', price: 22, desc: 'Flaky pastry with mixed veggies' },
+            { id: 'm4', name: 'Chicken Puffs', price: 30, desc: 'Flaky pastry with spiced chicken' }
+        ];
+        
+        let masterCatalog = JSON.parse(localStorage.getItem('canteenMasterCatalog_v2')) || defaultCatalog;
+
+        function renderMasterCatalog() {
+            const listDiv = document.getElementById('master-catalog-list');
+            listDiv.innerHTML = '';
+            
+            masterCatalog.forEach(mItem => {
+                const isLive = menu.some(liveItem => liveItem.name === mItem.name);
+                
+                // NEW: Added a delete button (🗑️) to the right side of the label
+                listDiv.innerHTML += `
+                    <div class="flex items-center justify-between bg-gray-50 p-2 rounded border border-gray-200 hover:bg-blue-50 transition">
+                        <label class="flex items-center space-x-3 cursor-pointer flex-1">
+                            <input type="checkbox" id="cb-${mItem.id}" class="w-5 h-5 text-blue-600 rounded" ${isLive ? 'checked' : ''} onchange="toggleMasterItem('${mItem.id}', this.checked)">
+                            <div>
+                                <div class="font-bold text-gray-800 text-sm">${mItem.name}</div>
+                                <div class="text-xs font-semibold text-green-600">₹${mItem.price.toFixed(2)}</div>
+                            </div>
+                        </label>
+                        <button onclick="deleteFromCatalog('${mItem.id}')" class="text-gray-400 hover:text-red-600 p-1 text-lg transition" title="Delete from Catalog">
+                            🗑️
+                        </button>
+                    </div>
+                `;
+            });
+        }
+
+        // --- NEW: FUNCTION TO DELETE FROM CATALOG ---
+        function deleteFromCatalog(masterId) {
+            if(confirm("Permanently delete this item from your Quick Add Catalog?")) {
+                // Filter out the deleted item
+                masterCatalog = masterCatalog.filter(item => item.id !== masterId);
+                // Save the new list to localStorage
+                localStorage.setItem('canteenMasterCatalog_v2', JSON.stringify(masterCatalog));
+                // Re-render the list visually
+                renderMasterCatalog();
+            }
+        }
+
+        async function toggleMasterItem(masterId, isChecked) {
+            const mItem = masterCatalog.find(i => i.id === masterId);
+            if (isChecked) {
+                const newItem = { id: Date.now(), name: mItem.name, price: mItem.price, desc: mItem.desc };
+                await fetch(`${SERVER_URL}/api/menu`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newItem) });
+            } else {
+                const liveItem = menu.find(i => i.name === mItem.name);
+                if (liveItem) {
+                    await fetch(`${SERVER_URL}/api/menu/${liveItem.id}`, { method: 'DELETE' });
+                }
+            }
+            loadMenu(); 
+        }
+
+        function switchTab(tab) {
+            document.getElementById('view-orders').style.display = tab === 'orders' ? 'flex' : 'none';
+            document.getElementById('view-menu').style.display = tab === 'menu' ? 'block' : 'none';
+            document.getElementById('btn-orders').className = tab === 'orders' ? "bg-blue-600 px-4 py-2 rounded font-semibold transition" : "bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded font-semibold transition";
+            document.getElementById('btn-menu').className = tab === 'menu' ? "bg-blue-600 px-4 py-2 rounded font-semibold transition" : "bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded font-semibold transition";
+        }
+
+        async function fetchStatus() {
+            const res = await fetch(`${SERVER_URL}/api/status`);
+            const data = await res.json();
+            isCanteenOpen = data.isOpen;
+            updateSwitchUI();
+        }
+
+        async function toggleCanteen() {
+            isCanteenOpen = !isCanteenOpen;
+            await fetch(`${SERVER_URL}/api/status`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ isOpen: isCanteenOpen }) });
+            updateSwitchUI();
+        }
+
+        function updateSwitchUI() {
+            const btn = document.getElementById('master-switch');
+            if (isCanteenOpen) {
+                btn.innerText = '⏹ STOP CANTEEN'; btn.className = 'bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-full font-bold shadow-lg transition transform hover:scale-105';
+            } else {
+                btn.innerText = '▶ START CANTEEN'; btn.className = 'bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-full font-bold shadow-lg transition transform hover:scale-105';
+            }
+        }
+
+        async function loadMenu() {
+            const res = await fetch(`${SERVER_URL}/api/menu`);
+            menu = await res.json();
+            const tbody = document.getElementById('menu-table-body');
+            tbody.innerHTML = '';
+            menu.forEach(item => {
+                tbody.innerHTML += `<tr class="border-b hover:bg-gray-50"><td class="p-4 font-semibold">${item.name}</td><td class="p-4 font-bold text-blue-600">₹${item.price.toFixed(2)}</td><td class="p-4"><button onclick="deleteMenuItem(${item.id})" class="text-red-500 font-semibold">Delete</button></td></tr>`;
+            });
+            renderMasterCatalog(); 
+        }
+
+        async function addMenuItem(e) {
+            e.preventDefault();
+            const nameInput = document.getElementById('new-name').value;
+            const priceInput = parseFloat(document.getElementById('new-price').value);
+            const descInput = document.getElementById('new-desc').value;
+            const shouldSaveToCatalog = document.getElementById('save-to-catalog').checked;
+
+            const newItem = { id: Date.now(), name: nameInput, price: priceInput, desc: descInput };
+            await fetch(`${SERVER_URL}/api/menu`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newItem) });
+            
+            if (shouldSaveToCatalog) {
+                const exists = masterCatalog.some(m => m.name.toLowerCase() === nameInput.toLowerCase());
+                if (!exists) {
+                    masterCatalog.push({ id: 'm' + Date.now(), name: nameInput, price: priceInput, desc: descInput });
+                    localStorage.setItem('canteenMasterCatalog_v2', JSON.stringify(masterCatalog)); 
+                }
+            }
+
+            document.getElementById('add-item-form').reset();
+            loadMenu();
+        }
+
+        async function deleteMenuItem(id) {
+            if(confirm("Delete this from today's live menu?")) { 
+                await fetch(`${SERVER_URL}/api/menu/${id}`, { method: 'DELETE' }); 
+                loadMenu(); 
+            }
+        }
+
+        async function clearEntireMenu() {
+            if(confirm("Are you SURE you want to clear today's menu? (This won't delete your Quick Add Catalog)")) { 
+                await fetch(`${SERVER_URL}/api/menu-clear`, { method: 'DELETE' }); 
+                loadMenu(); 
+            }
+        }
+
+        async function loadOrders() {
+            const res = await fetch(`${SERVER_URL}/api/orders`);
+            orders = await res.json();
+            const prepList = document.getElementById('preparing-list'); const readyList = document.getElementById('ready-list');
+            prepList.innerHTML = ''; readyList.innerHTML = '';
+            let pCount = 0; let rCount = 0;
+
+            orders.forEach(order => {
+                if (order.status === 'completed') return; 
+                const itemsHtml = order.items.map(i => `<li>${i}</li>`).join('');
+                const displayTotal = order.total ? `₹${order.total.toFixed(2)}` : '₹0.00';
+                
+                let cardHtml = `<div class="p-4 border rounded shadow-sm bg-gray-50"><div class="flex justify-between items-center border-b pb-2 mb-2"><span class="font-bold text-lg">${order.id}</span><span class="text-sm font-semibold bg-blue-100 text-blue-800 px-2 py-1 rounded">${order.time}</span></div><div class="flex justify-between items-center mb-2"><p class="text-sm text-gray-500">Customer: <span class="font-semibold text-gray-800">${order.customer}</span></p><span class="font-extrabold text-green-700 bg-green-100 px-2 rounded">Total: ${displayTotal}</span></div><ul class="list-disc list-inside text-sm mb-3">${itemsHtml}</ul>`;
+
+                if (order.status === 'preparing') { pCount++; cardHtml += `<button onclick="updateStatus('${order.id}', 'ready')" class="w-full bg-green-500 text-white py-2 rounded font-semibold">Mark as Ready</button></div>`; prepList.innerHTML += cardHtml; } 
+                else if (order.status === 'ready') { rCount++; cardHtml += `<button onclick="updateStatus('${order.id}', 'completed')" class="w-full bg-gray-300 text-gray-800 py-2 rounded font-semibold">Order Picked Up / Paid</button></div>`; readyList.innerHTML += cardHtml; }
+            });
+            document.getElementById('prep-count').innerText = pCount; document.getElementById('ready-count').innerText = rCount;
+        }
+
+        async function updateStatus(orderId, newStatus) {
+            await fetch(`${SERVER_URL}/api/orders/${orderId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: newStatus }) });
+            loadOrders();
+        }
+
+        fetchStatus(); loadMenu(); loadOrders(); setInterval(loadOrders, 3000); 
+    </script>
+</body>
+</html>
