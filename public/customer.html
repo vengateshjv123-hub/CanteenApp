@@ -11,12 +11,12 @@
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     
     <style>
-        /* ORIGINAL UI STYLING */
+        /* ORIGINAL BLUE UI - FULLY EXPANDED */
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             margin: 0; 
             background-color: #f8f9fa; 
-            overflow-x: hidden;
+            overflow-x: hidden; 
         }
 
         .navbar { 
@@ -80,9 +80,9 @@
             color: #059669; 
             font-weight: bold; 
             font-size: 20px; 
-            margin-bottom: 10px;
+            margin-bottom: 10px; 
         }
-        
+
         .parcel-box { 
             background: #eff6ff; 
             border: 1px solid #bfdbfe; 
@@ -125,6 +125,17 @@
             border-radius: 12px; 
             box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
             width: 350px; 
+            text-align: center; 
+        }
+
+        .login-input { 
+            width: 100%; 
+            padding: 15px; 
+            border: 2px solid #bfdbfe; 
+            border-radius: 8px; 
+            font-size: 16px; 
+            margin-bottom: 15px; 
+            box-sizing: border-box; 
             text-align: center; 
         }
 
@@ -171,39 +182,39 @@
 
         /* 🚀 FUTURISTIC CYBER-TOAST POP-UP STYLES */
         .cyber-toast {
-            position: fixed;
-            bottom: 30px;
-            right: -500px; /* Hidden off-screen initially */
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(12px);
+            position: fixed; 
+            bottom: 30px; 
+            right: -500px; 
+            background: rgba(15, 23, 42, 0.85); 
+            backdrop-filter: blur(12px); 
             -webkit-backdrop-filter: blur(12px);
-            border: 1px solid #0ea5e9;
+            border: 1px solid #0ea5e9; 
             box-shadow: 0 0 20px rgba(14, 165, 233, 0.5), inset 0 0 15px rgba(14, 165, 233, 0.2);
-            color: #fff;
-            padding: 20px 30px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
+            color: #fff; 
+            padding: 20px 30px; 
+            border-radius: 12px; 
+            display: flex; 
+            align-items: center; 
             gap: 20px;
-            font-family: 'Courier New', Courier, monospace;
+            font-family: 'Courier New', Courier, monospace; 
             z-index: 9999;
             transition: right 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
         }
 
-        .cyber-toast.show {
-            right: 30px; /* Slides in */
+        .cyber-toast.show { 
+            right: 30px; 
         }
 
-        .cyber-toast-icon {
-            font-size: 28px;
-            text-shadow: 0 0 15px #0ea5e9;
+        .cyber-toast-icon { 
+            font-size: 28px; 
+            text-shadow: 0 0 15px #0ea5e9; 
         }
 
-        .cyber-toast-content {
-            font-size: 16px;
-            font-weight: bold;
-            letter-spacing: 1px;
-            text-transform: uppercase;
+        .cyber-toast-content { 
+            font-size: 16px; 
+            font-weight: bold; 
+            letter-spacing: 1px; 
+            text-transform: uppercase; 
         }
     </style>
 </head>
@@ -211,19 +222,22 @@
 
     <div id="loginScreen">
         <div class="login-card" id="infoStep">
-            <h1>🍔</h1>
-            <h2>QuickBite Canteen</h2>
+            <h1 style="margin-top: 0; font-size: 40px;">🍔</h1>
+            <h2 style="color: #1e3a8a; margin-top: 0;">QuickBite Canteen</h2>
             
-            <input type="email" id="emailInput" style="width:100%; padding:12px; margin-bottom:15px; border:1px solid #ddd; border-radius:8px;" placeholder="Email">
-            <input type="tel" id="mobileInput" style="width:100%; padding:12px; margin-bottom:15px; border:1px solid #ddd; border-radius:8px;" placeholder="10-Digit Mobile" maxlength="10">
+            <input type="email" id="emailInput" class="login-input" placeholder="Email Address">
+            <input type="tel" id="mobileInput" class="login-input" placeholder="10-Digit Mobile" maxlength="10">
             
-            <button class="btn-add" style="padding:15px;" onclick="sendOTP()">Send OTP</button>
+            <button class="btn-add" style="padding:15px; font-size:18px;" onclick="sendOTP()">Send OTP</button>
         </div>
         
         <div class="login-card" id="otpStep" style="display: none;">
-            <h2>Verify Code</h2>
-            <input type="text" id="otpInput" style="width:100%; padding:12px; margin-bottom:20px; text-align:center; font-size:24px; border:1px solid #ddd; border-radius:8px;" placeholder="----" maxlength="4">
-            <button class="btn-add" style="padding:15px;" onclick="verifyOTP()">Verify & Login</button>
+            <h1 style="margin-top: 0; font-size: 40px;">✉️</h1>
+            <h2 style="color: #1e3a8a; margin-top: 0;">Verify Email</h2>
+            
+            <input type="text" id="otpInput" class="login-input" style="font-size:24px; letter-spacing: 5px;" placeholder="----" maxlength="4">
+            
+            <button class="btn-add" style="padding:15px; font-size:18px;" onclick="verifyOTP()">Verify & Login</button>
         </div>
     </div>
 
@@ -237,24 +251,26 @@
             <div class="menu-container" id="menu-container"></div>
             
             <div class="status-tracker">
-                <h3 style="margin-top:0;">📋 My Recent Orders</h3>
+                <h3 style="margin-top:0; color: #1f2937;">📋 My Recent Orders</h3>
                 <div id="myOrderStatus">No active orders.</div>
             </div>
         </div>
         
         <div id="closedScreen" style="display:none; text-align:center; padding:100px;">
-            <h1 style="color: #ef4444;">🛑 Canteen is Closed</h1>
-            <p>The seller is not accepting orders right now.</p>
+            <h1 style="color: #ef4444; font-size: 40px;">🛑 Canteen is Closed</h1>
+            <p style="color: #6b7280; font-size: 18px;">The seller is not accepting orders right now. Please check back later.</p>
         </div>
     </div>
 
     <div id="cartModal" class="modal">
         <div class="modal-content">
-            <h2 style="margin-top:0;">Your Cart</h2>
-            <div id="cartItemsList"></div>
-            <h3 id="modalTotal" style="text-align:right; border-top:1px solid #eee; padding-top:10px;">Total: ₹0</h3>
-            <button class="btn-add" style="background:#10b981; padding:15px; font-size:18px;" onclick="placeOrder()">Confirm Order</button>
-            <button class="btn-add" style="background:#6b7280; margin-top:10px;" onclick="closeCart()">Close</button>
+            <h2 style="margin-top:0; color: #1f2937; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px;">Your Cart</h2>
+            <div id="cartItemsList" style="margin-top: 20px;"></div>
+            
+            <h3 id="modalTotal" style="text-align:right; border-top:2px solid #e5e7eb; padding-top:15px; margin-top: 15px; color: #059669;">Total: ₹0</h3>
+            
+            <button class="btn-add" style="background:#10b981; padding:15px; font-size:18px;" onclick="placeOrder()">Confirm & Place Order</button>
+            <button class="btn-add" style="background:#6b7280; margin-top:10px; padding:15px; font-size:18px;" onclick="closeCart()">Continue Shopping</button>
         </div>
     </div>
 
@@ -270,6 +286,7 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+        
         emailjs.init("wUfYYvhMWJmnQ5FCs");
 
         // --- STATE VARIABLES ---
@@ -277,7 +294,7 @@
         let cart = {}; 
         let parcelSelections = {};
         let menuDataCache = {}; 
-        let knownOrders = {}; // Tracks order status for Pop-Ups
+        let knownOrders = {};
 
         // --- 🚀 FUTURISTIC ALERT FUNCTION ---
         function showCyberToast(msg, icon = '🔔', color = '#0ea5e9') {
@@ -288,16 +305,14 @@
             toastText.innerText = msg;
             toastIcon.innerText = icon;
 
-            // Apply custom glowing colors
             toast.style.borderColor = color;
             toast.style.boxShadow = `0 0 20px ${color}80, inset 0 0 15px ${color}33`;
             toastIcon.style.textShadow = `0 0 15px ${color}`;
 
             toast.classList.add('show');
             
-            // Auto-hide after 5 seconds
-            setTimeout(() => {
-                toast.classList.remove('show');
+            setTimeout(() => { 
+                toast.classList.remove('show'); 
             }, 5000);
         }
 
@@ -312,8 +327,11 @@
             }
             
             generatedOTP = Math.floor(1000 + Math.random() * 9000).toString();
-            emailjs.send("service_uzeknsj", "template_5cxhvu7", { to_email: email, passcode: generatedOTP })
-            .then(() => { 
+            
+            emailjs.send("service_uzeknsj", "template_5cxhvu7", { 
+                to_email: email, 
+                passcode: generatedOTP 
+            }).then(() => { 
                 document.getElementById('infoStep').style.display = 'none'; 
                 document.getElementById('otpStep').style.display = 'block'; 
                 showCyberToast("OTP Sent to Email!", "📩", "#10b981");
@@ -325,8 +343,8 @@
                 localStorage.setItem('userEmail', document.getElementById('emailInput').value);
                 localStorage.setItem('userMobile', document.getElementById('mobileInput').value);
                 location.reload();
-            } else {
-                showCyberToast("Access Denied: Incorrect OTP", "❌", "#ef4444");
+            } else { 
+                showCyberToast("Access Denied: Incorrect OTP", "❌", "#ef4444"); 
             }
         }
 
@@ -334,6 +352,7 @@
         function renderMenu() {
             const container = document.getElementById('menu-container'); 
             container.innerHTML = '';
+            
             const categories = ["Lunch", "Snacks", "Beverages", "Icecream"];
             
             categories.forEach(cat => {
@@ -350,12 +369,11 @@
                         
                         let currentQty = cart[itemID] ? cart[itemID].quantity : 0;
                         
-                        // PARCEL CHECKBOX
                         let parcelHTML = item.allowParcel ? 
-                            `<label class="parcel-box"><input type="checkbox" onchange="toggleParcel('${k}', this.checked)" ${isP ? 'checked' : ''}> 🥡 Parcel (+₹10)</label>` 
-                            : '';
+                            `<label class="parcel-box">
+                                <input type="checkbox" onchange="toggleParcel('${k}', this.checked)" ${isP ? 'checked' : ''}> 🥡 Parcel (+₹10)
+                            </label>` : '';
 
-                        // BUTTON LOGIC
                         let buttonHTML = '';
                         if (currentQty === 0) {
                             buttonHTML = `<button class="btn-add" style="margin-top:auto;" onclick="addToCart('${item.name}', ${price}, '${k}', ${isP})">Add</button>`;
@@ -408,18 +426,24 @@
                 Object.values(data).forEach(o => {
                     if (o.mobile === myMobile) {
                         
-                        // 🚀 TRIGGER FUTURISTIC POP-UP
+                        // 🚀 TRIGGER POP-UPS (Ready & Cancelled)
                         if (knownOrders[o.id] && knownOrders[o.id] !== o.status) {
                             if (o.status === 'ready') {
-                                showCyberToast(`ORDER #${o.id} IS READY FOR PICKUP!`, '🔥', '#10b981'); // Green Glow
+                                showCyberToast(`ORDER #${o.id} IS READY FOR PICKUP!`, '🔥', '#10b981'); 
+                            } else if (o.status === 'cancelled') {
+                                showCyberToast(`ORDER #${o.id} HAS BEEN CANCELLED!`, '❌', '#ef4444'); 
                             }
                         }
+                        
                         knownOrders[o.id] = o.status;
 
+                        // Display styling based on status
+                        let statusColor = o.status === 'cancelled' ? '#ef4444' : '#2563eb';
+                        
                         list.innerHTML += `
-                            <div style="padding:10px; background:#f0f7ff; border-radius:8px; margin-bottom:5px;">
-                                <strong>Order #${o.id}</strong>: 
-                                <span style="color:#2563eb; font-weight:bold;">${o.status.toUpperCase()}</span>
+                            <div style="padding:15px; background:#f0f7ff; border-radius:8px; margin-bottom:10px; border-left: 4px solid ${statusColor};">
+                                <strong style="color: #1f2937;">Order #${o.id}</strong><br>
+                                Status: <span style="color:${statusColor}; font-weight:bold;">${o.status.toUpperCase()}</span>
                             </div>`;
                     }
                 });
@@ -429,10 +453,11 @@
             db.ref('completedOrders').on('value', snap => {
                 const data = snap.val() || {};
                 const myMobile = localStorage.getItem('userMobile');
+                
                 Object.values(data).forEach(o => {
                     if (o.mobile === myMobile) {
                         if (knownOrders[o.id] && knownOrders[o.id] !== 'completed') {
-                            showCyberToast(`ORDER #${o.id} COMPLETE!`, '✅', '#0ea5e9'); // Blue Glow
+                            showCyberToast(`ORDER #${o.id} COMPLETE!`, '✅', '#0ea5e9'); 
                         }
                         knownOrders[o.id] = 'completed';
                     }
@@ -457,7 +482,6 @@
             updateCartUI();
         }
 
-        // FIXED THE CART BUTTON ERROR HERE 
         function updateCartUI() {
             let total = 0;
             let count = 0;
@@ -467,7 +491,6 @@
                 count += i.quantity; 
             });
             
-            // Replaces the ENTIRE text of the button cleanly
             document.getElementById('mainCartBtn').innerHTML = `🛒 ₹${total} (${count} items)`;
             renderMenu(); 
         }
@@ -482,25 +505,30 @@
                 total += (i.price * i.quantity);
                 
                 list.innerHTML += `
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; padding: 10px; background:#f9fafb; border-radius:8px;">
-                        <span><strong>${i.name}</strong><br><small>₹${i.price} each</small></span>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; padding: 15px; background:#f9fafb; border-radius:8px; border: 1px solid #e5e7eb;">
+                        <span>
+                            <strong style="color: #1f2937; font-size: 16px;">${i.name}</strong><br>
+                            <small style="color: #6b7280;">₹${i.price} each</small>
+                        </span>
                         <div style="display:flex; align-items:center; gap:10px;">
-                            <button class="qty-btn" style="background:#ef4444; color:white; width:30px; height:30px;" onclick="updateQty('${key}', -1)">-</button> 
-                            <span style="font-weight:bold; font-size:18px;">${i.quantity}</span>
-                            <button class="qty-btn" style="background:#10b981; color:white; width:30px; height:30px;" onclick="updateQty('${key}', 1)">+</button>
+                            <button class="qty-btn" style="background:#ef4444; color:white; width:35px; height:35px; font-size:18px;" onclick="updateQty('${key}', -1)">-</button> 
+                            <span style="font-weight:bold; font-size:18px; color: #1f2937; width: 20px; text-align: center;">${i.quantity}</span>
+                            <button class="qty-btn" style="background:#10b981; color:white; width:35px; height:35px; font-size:18px;" onclick="updateQty('${key}', 1)">+</button>
                         </div>
                     </div>`;
             });
             
-            document.getElementById('modalTotal').innerText = "Total: ₹" + total;
+            document.getElementById('modalTotal').innerText = "Total Payable: ₹" + total;
             document.getElementById('cartModal').style.display = 'flex';
         }
 
         function updateQty(itemID, change) {
             cart[itemID].quantity += change;
+            
             if (cart[itemID].quantity <= 0) {
                 delete cart[itemID];
             }
+            
             updateCartUI(); 
             
             if (document.getElementById('cartModal').style.display === 'flex') {
@@ -515,7 +543,11 @@
         // --- PLACE ORDER ---
         function placeOrder() {
             const items = Object.values(cart); 
-            if (items.length === 0) return;
+            
+            if (items.length === 0) {
+                showCyberToast("Your cart is empty!", "⚠️", "#ef4444");
+                return;
+            }
             
             let totalAmount = items.reduce((s,i) => s + (i.price * i.quantity), 0);
             const orderId = Math.floor(1000 + Math.random() * 9000);
@@ -529,6 +561,7 @@
                 timePlaced: new Date().toLocaleTimeString() 
             };
             
+            // Push Order to Cloud
             db.ref('orders').push(order).then(() => { 
                 showCyberToast(`Order #${orderId} Transmitted!`, '📡', '#3b82f6');
                 cart = {}; 
