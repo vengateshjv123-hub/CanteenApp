@@ -16,6 +16,7 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             margin: 0; 
             background-color: #f8f9fa; 
+            overflow-x: hidden;
         }
 
         .navbar { 
@@ -167,6 +168,43 @@
             border-radius: 12px; 
             border: 1px solid #e5e7eb; 
         }
+
+        /* 🚀 FUTURISTIC CYBER-TOAST POP-UP STYLES */
+        .cyber-toast {
+            position: fixed;
+            bottom: 30px;
+            right: -500px; /* Hidden off-screen initially */
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid #0ea5e9;
+            box-shadow: 0 0 20px rgba(14, 165, 233, 0.5), inset 0 0 15px rgba(14, 165, 233, 0.2);
+            color: #fff;
+            padding: 20px 30px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-family: 'Courier New', Courier, monospace;
+            z-index: 9999;
+            transition: right 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        .cyber-toast.show {
+            right: 30px; /* Slides in */
+        }
+
+        .cyber-toast-icon {
+            font-size: 28px;
+            text-shadow: 0 0 15px #0ea5e9;
+        }
+
+        .cyber-toast-content {
+            font-size: 16px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
     </style>
 </head>
 <body>
@@ -192,7 +230,7 @@
     <div id="appWrapper" style="display: none;">
         <div class="navbar">
             <h2>🍔 QuickBite</h2>
-            <button class="cart-btn" onclick="openCart()">🛒 ₹<span id="cartTotalDisplay">0</span> (0 items)</button>
+            <button class="cart-btn" id="mainCartBtn" onclick="openCart()">🛒 ₹0 (0 items)</button>
         </div>
         
         <div id="activeApp">
@@ -220,6 +258,11 @@
         </div>
     </div>
 
+    <div id="cyberToast" class="cyber-toast">
+        <div class="cyber-toast-icon" id="cyberToastIcon">🔔</div>
+        <div class="cyber-toast-content" id="cyberToastText">System Message</div>
+    </div>
+
     <script>
         // --- CLOUD SETUP ---
         const firebaseConfig = { 
@@ -236,18 +279,44 @@
         let menuDataCache = {}; 
         let knownOrders = {}; // Tracks order status for Pop-Ups
 
+        // --- 🚀 FUTURISTIC ALERT FUNCTION ---
+        function showCyberToast(msg, icon = '🔔', color = '#0ea5e9') {
+            const toast = document.getElementById('cyberToast');
+            const toastText = document.getElementById('cyberToastText');
+            const toastIcon = document.getElementById('cyberToastIcon');
+
+            toastText.innerText = msg;
+            toastIcon.innerText = icon;
+
+            // Apply custom glowing colors
+            toast.style.borderColor = color;
+            toast.style.boxShadow = `0 0 20px ${color}80, inset 0 0 15px ${color}33`;
+            toastIcon.style.textShadow = `0 0 15px ${color}`;
+
+            toast.classList.add('show');
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 5000);
+        }
+
         // --- AUTHENTICATION ---
         function sendOTP() {
             let email = document.getElementById('emailInput').value;
             let mobile = document.getElementById('mobileInput').value;
             
-            if (!email.includes('@') || mobile.length !== 10) { alert("Invalid details"); return; }
+            if (!email.includes('@') || mobile.length !== 10) { 
+                showCyberToast("Invalid Details. Check Email & Mobile.", "⚠️", "#ef4444"); 
+                return; 
+            }
             
             generatedOTP = Math.floor(1000 + Math.random() * 9000).toString();
             emailjs.send("service_uzeknsj", "template_5cxhvu7", { to_email: email, passcode: generatedOTP })
             .then(() => { 
                 document.getElementById('infoStep').style.display = 'none'; 
                 document.getElementById('otpStep').style.display = 'block'; 
+                showCyberToast("OTP Sent to Email!", "📩", "#10b981");
             });
         }
 
@@ -257,12 +326,11 @@
                 localStorage.setItem('userMobile', document.getElementById('mobileInput').value);
                 location.reload();
             } else {
-                alert("Incorrect OTP");
+                showCyberToast("Access Denied: Incorrect OTP", "❌", "#ef4444");
             }
         }
 
         // --- MENU RENDERING ---
-        // We separate rendering so we can update the buttons instantly when cart changes
         function renderMenu() {
             const container = document.getElementById('menu-container'); 
             container.innerHTML = '';
@@ -287,7 +355,7 @@
                             `<label class="parcel-box"><input type="checkbox" onchange="toggleParcel('${k}', this.checked)" ${isP ? 'checked' : ''}> 🥡 Parcel (+₹10)</label>` 
                             : '';
 
-                        // BUTTON LOGIC: Changes to "- 1 +" if item is in cart
+                        // BUTTON LOGIC
                         let buttonHTML = '';
                         if (currentQty === 0) {
                             buttonHTML = `<button class="btn-add" style="margin-top:auto;" onclick="addToCart('${item.name}', ${price}, '${k}', ${isP})">Add</button>`;
@@ -314,19 +382,17 @@
 
         function toggleParcel(key, isChecked) {
             parcelSelections[key] = isChecked;
-            renderMenu(); // Redraws menu instantly to update prices
+            renderMenu(); 
         }
 
-        // --- FIREBASE SYNC ---
+        // --- FIREBASE SYNC & LIVE TRACKING ---
         function syncCanteen() {
-            // Sync Open/Closed Status
             db.ref('canteenStatus').on('value', snap => {
                 let open = snap.val() === 'open';
                 document.getElementById('activeApp').style.display = open ? 'block' : 'none';
                 document.getElementById('closedScreen').style.display = open ? 'none' : 'block';
             });
 
-            // Fetch and Store Menu Data
             db.ref('canteenMenu').on('value', snap => {
                 menuDataCache = snap.val() || {};
                 renderMenu();
@@ -342,10 +408,10 @@
                 Object.values(data).forEach(o => {
                     if (o.mobile === myMobile) {
                         
-                        // POP-UP LOGIC: Triggers when Seller changes status
+                        // 🚀 TRIGGER FUTURISTIC POP-UP
                         if (knownOrders[o.id] && knownOrders[o.id] !== o.status) {
                             if (o.status === 'ready') {
-                                alert(`🔔 ALERT: Your Order #${o.id} is READY for pickup!`);
+                                showCyberToast(`ORDER #${o.id} IS READY FOR PICKUP!`, '🔥', '#10b981'); // Green Glow
                             }
                         }
                         knownOrders[o.id] = o.status;
@@ -359,14 +425,14 @@
                 });
             });
 
-            // Sync Completed Orders for Pop-Up
+            // Trigger Alert for Completed Orders
             db.ref('completedOrders').on('value', snap => {
                 const data = snap.val() || {};
                 const myMobile = localStorage.getItem('userMobile');
                 Object.values(data).forEach(o => {
                     if (o.mobile === myMobile) {
                         if (knownOrders[o.id] && knownOrders[o.id] !== 'completed') {
-                            alert(`✅ ALERT: Your Order #${o.id} is COMPLETE!`);
+                            showCyberToast(`ORDER #${o.id} COMPLETE!`, '✅', '#0ea5e9'); // Blue Glow
                         }
                         knownOrders[o.id] = 'completed';
                     }
@@ -391,6 +457,7 @@
             updateCartUI();
         }
 
+        // FIXED THE CART BUTTON ERROR HERE 
         function updateCartUI() {
             let total = 0;
             let count = 0;
@@ -400,8 +467,9 @@
                 count += i.quantity; 
             });
             
-            document.getElementById('cartTotalDisplay').innerText = `${total} (${count} items)`;
-            renderMenu(); // Refreshes the "- 1 +" buttons on the cards
+            // Replaces the ENTIRE text of the button cleanly
+            document.getElementById('mainCartBtn').innerHTML = `🛒 ₹${total} (${count} items)`;
+            renderMenu(); 
         }
 
         function openCart() {
@@ -435,7 +503,6 @@
             }
             updateCartUI(); 
             
-            // Auto-refresh the modal if it's currently open
             if (document.getElementById('cartModal').style.display === 'flex') {
                 openCart();
             }
@@ -463,14 +530,14 @@
             };
             
             db.ref('orders').push(order).then(() => { 
-                alert("Order Placed Successfully! Keep your app open to receive alerts."); 
+                showCyberToast(`Order #${orderId} Transmitted!`, '📡', '#3b82f6');
                 cart = {}; 
                 updateCartUI(); 
                 closeCart(); 
             });
         }
 
-        // --- APP INITIALIZATION ---
+        // --- INITIALIZE APP ---
         if (localStorage.getItem('userEmail')) { 
             document.getElementById('loginScreen').style.display = 'none'; 
             document.getElementById('appWrapper').style.display = 'block'; 
