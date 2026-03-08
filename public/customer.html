@@ -11,7 +11,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     
     <style>
-        /* ORIGINAL BLUE UI - FULLY EXPANDED */
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             margin: 0; 
@@ -185,7 +184,6 @@
             border: 1px solid #e5e7eb; 
         }
 
-        /* 🚀 FUTURISTIC CYBER-TOAST POP-UP STYLES */
         .cyber-toast {
             position: fixed; 
             bottom: 30px; 
@@ -285,7 +283,6 @@
     </div>
 
     <script>
-        // --- CLOUD SETUP ---
         const firebaseConfig = { 
             databaseURL: "https://quickbite-canteen-default-rtdb.firebaseio.com/" 
         };
@@ -294,14 +291,12 @@
         
         emailjs.init("wUfYYvhMWJmnQ5FCs");
 
-        // --- STATE VARIABLES ---
         let generatedOTP = "";
         let cart = {}; 
         let parcelSelections = {};
         let menuDataCache = {}; 
         let knownOrders = {};
 
-        // --- 🚀 FUTURISTIC ALERT FUNCTION ---
         function showCyberToast(msg, icon = '🔔', color = '#0ea5e9') {
             const toast = document.getElementById('cyberToast');
             const toastText = document.getElementById('cyberToastText');
@@ -321,7 +316,6 @@
             }, 5000);
         }
 
-        // --- AUTHENTICATION ---
         function sendOTP() {
             let email = document.getElementById('emailInput').value;
             let mobile = document.getElementById('mobileInput').value;
@@ -353,8 +347,6 @@
             }
         }
 
-        // --- INVENTORY HELPER ---
-        // Calculates total quantity of an item currently in the user's cart (Parcel + Regular)
         function getTotalCartQtyForBaseKey(baseKey) {
             let total = 0;
             if (cart[baseKey]) total += cart[baseKey].quantity;
@@ -362,7 +354,6 @@
             return total;
         }
 
-        // --- MENU RENDERING ---
         function renderMenu() {
             const container = document.getElementById('menu-container'); 
             container.innerHTML = '';
@@ -392,7 +383,6 @@
 
                         let buttonHTML = '';
                         
-                        // OUT OF STOCK LOGIC
                         if (availableStock <= 0 && totalCartQty === 0) {
                             buttonHTML = `<button class="btn-add btn-disabled" style="margin-top:auto;" disabled>Out of Stock</button>`;
                         } 
@@ -414,7 +404,6 @@
                                 <p class="price">₹${price}</p>
                                 ${parcelHTML}
                                 ${buttonHTML}
-                                <small style="display:block; margin-top:8px; color:#6b7280; font-weight:bold;">Stock: ${availableStock}</small>
                             </div>`;
                     });
                 }
@@ -426,7 +415,6 @@
             renderMenu(); 
         }
 
-        // --- FIREBASE SYNC & LIVE TRACKING ---
         function syncCanteen() {
             db.ref('canteenStatus').on('value', snap => {
                 let open = snap.val() === 'open';
@@ -436,10 +424,9 @@
 
             db.ref('canteenMenu').on('value', snap => {
                 menuDataCache = snap.val() || {};
-                renderMenu(); // Redraw menu automatically when stock drops
+                renderMenu(); 
             });
 
-            // Sync Live Orders & Trigger Alerts
             db.ref('orders').on('value', snap => {
                 const list = document.getElementById('myOrderStatus'); 
                 list.innerHTML = '';
@@ -449,7 +436,6 @@
                 Object.values(data).forEach(o => {
                     if (o.mobile === myMobile) {
                         
-                        // 🚀 TRIGGER POP-UPS (Ready & Cancelled)
                         if (knownOrders[o.id] && knownOrders[o.id] !== o.status) {
                             if (o.status === 'ready') {
                                 showCyberToast(`ORDER #${o.id} IS READY FOR PICKUP!`, '🔥', '#10b981'); 
@@ -471,7 +457,6 @@
                 });
             });
 
-            // Trigger Alert for Completed Orders
             db.ref('completedOrders').on('value', snap => {
                 const data = snap.val() || {};
                 const myMobile = localStorage.getItem('userMobile');
@@ -487,13 +472,18 @@
             });
         }
 
-        // --- STRICT CART INVENTORY LOGIC ---
         function addToCart(name, price, baseKey, isParcel) {
             let availableStock = menuDataCache[baseKey].stock || 0;
+            let maxPerOrder = menuDataCache[baseKey].maxPerOrder || 999;
             let currentTotalCartQty = getTotalCartQtyForBaseKey(baseKey);
 
+            if (currentTotalCartQty + 1 > maxPerOrder) {
+                showCyberToast(`Limit reached: You can only order ${maxPerOrder} per order!`, "⚠️", "#ef4444");
+                return;
+            }
+
             if (currentTotalCartQty + 1 > availableStock) {
-                showCyberToast(`Only ${availableStock} left in stock!`, "⚠️", "#ef4444");
+                showCyberToast(`Out of stock!`, "⚠️", "#ef4444");
                 return;
             }
 
@@ -515,11 +505,18 @@
         function updateQty(itemID, change) {
             let baseKey = cart[itemID].baseKey;
             let availableStock = menuDataCache[baseKey].stock || 0;
+            let maxPerOrder = menuDataCache[baseKey].maxPerOrder || 999;
             let currentTotalCartQty = getTotalCartQtyForBaseKey(baseKey);
 
-            if (change > 0 && (currentTotalCartQty + change > availableStock)) {
-                showCyberToast(`Only ${availableStock} left in stock!`, "⚠️", "#ef4444");
-                return;
+            if (change > 0) {
+                if (currentTotalCartQty + change > maxPerOrder) {
+                    showCyberToast(`Limit reached: You can only order ${maxPerOrder} per order!`, "⚠️", "#ef4444");
+                    return;
+                }
+                if (currentTotalCartQty + change > availableStock) {
+                    showCyberToast(`Out of stock!`, "⚠️", "#ef4444");
+                    return;
+                }
             }
 
             cart[itemID].quantity += change;
@@ -579,7 +576,6 @@
             document.getElementById('cartModal').style.display = 'none'; 
         }
 
-        // --- ORDER PLACEMENT WITH STOCK REDUCTION ---
         function placeOrder() {
             const items = Object.values(cart); 
             
@@ -600,14 +596,12 @@
                 timePlaced: new Date().toLocaleTimeString() 
             };
             
-            // Deduct the stock instantly in Firebase Database Transaction
             items.forEach(cartItem => {
                 db.ref(`canteenMenu/${cartItem.baseKey}/stock`).transaction(currentStock => {
                     return (currentStock || 0) - cartItem.quantity;
                 });
             });
             
-            // Push Order to Cloud
             db.ref('orders').push(order).then(() => { 
                 showCyberToast(`Order #${orderId} Transmitted!`, '📡', '#3b82f6');
                 cart = {}; 
@@ -616,7 +610,6 @@
             });
         }
 
-        // --- INITIALIZE APP ---
         if (localStorage.getItem('userEmail')) { 
             document.getElementById('loginScreen').style.display = 'none'; 
             document.getElementById('appWrapper').style.display = 'block'; 
