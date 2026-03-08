@@ -53,15 +53,8 @@
             transition: 0.3s; 
         }
 
-        .btn-start { 
-            background-color: #10b981; 
-            color: white; 
-        }
-
-        .btn-stop { 
-            background-color: #ef4444; 
-            color: white; 
-        }
+        .btn-start { background-color: #10b981; color: white; }
+        .btn-stop { background-color: #ef4444; color: white; }
 
         .logout-btn { 
             background: transparent; 
@@ -133,24 +126,9 @@
             padding-bottom: 10px; 
         }
         
-        .input-group { 
-            margin-bottom: 15px; 
-        }
-
-        .input-group label { 
-            display: block; 
-            margin-bottom: 5px; 
-            font-weight: bold; 
-            color: #4b5563; 
-        }
-
-        .input-group input, .input-group select { 
-            width: 100%; 
-            padding: 10px; 
-            border: 1px solid #d1d5db; 
-            border-radius: 6px; 
-            box-sizing: border-box; 
-        }
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #4b5563; }
+        .input-group input, .input-group select { width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; box-sizing: border-box; }
         
         .publish-btn { 
             background-color: #059669; 
@@ -162,7 +140,6 @@
             width: 100%; 
             font-weight: bold; 
             font-size: 16px; 
-            margin-top: 5px; 
         }
 
         .quick-add-btn { 
@@ -187,7 +164,6 @@
             width: 18px; 
             height: 18px; 
             font-size: 10px; 
-            cursor: pointer; 
             display: flex; 
             justify-content: center; 
             align-items: center; 
@@ -209,39 +185,24 @@
             transition: 0.3s; 
         }
 
-        .order-pending { 
-            background: #fffbeb; 
-            border-color: #fde68a; 
-        } 
-
-        .order-ready { 
-            background: #ecfdf5; 
-            border-color: #6ee7b7; 
-        }   
+        .order-pending { background: #fffbeb; border-color: #fde68a; } 
+        .order-ready { background: #ecfdf5; border-color: #6ee7b7; }   
         
         .action-btn { 
-            padding: 12px; 
+            padding: 10px 15px; 
             border: none; 
             border-radius: 6px; 
             font-weight: bold; 
             cursor: pointer; 
             font-size: 14px; 
-            transition: 0.2s; 
         }
 
-        .btn-mark-ready { 
-            background-color: #3b82f6; 
-            color: white; 
-        }
-
-        .btn-mark-complete { 
-            background-color: #10b981; 
-            color: white; 
-        }
-
-        .btn-cancel { 
-            background-color: #ef4444; 
-            color: white; 
+        .inline-input { 
+            width: 60px; 
+            padding: 4px; 
+            border: 1px solid #d1d5db; 
+            border-radius: 4px; 
+            text-align: center; 
         }
 
         .modal { 
@@ -263,7 +224,6 @@
             border-radius: 12px; 
             width: 90%; 
             max-width: 500px; 
-            box-shadow: 0 10px 15px rgba(0,0,0,0.1); 
             max-height: 80vh; 
             overflow-y: auto; 
         }
@@ -287,51 +247,18 @@
             border-top: 6px solid #059669; 
         }
 
-        .login-input { 
-            width: 100%; 
-            padding: 15px; 
-            border: 2px solid #a7f3d0; 
-            border-radius: 8px; 
-            font-size: 18px; 
-            text-align: center; 
-            margin-bottom: 20px; 
-            box-sizing: border-box; 
-        }
-
-        .cat-badge { 
-            font-size: 12px; 
-            background: #e5e7eb; 
-            padding: 2px 6px; 
-            border-radius: 4px; 
-            color: #4b5563; 
-        }
-
-        .parcel-badge { 
-            font-size: 12px; 
-            background: #dbeafe; 
-            padding: 2px 6px; 
-            border-radius: 4px; 
-            color: #1e40af; 
-            margin-left: 5px; 
-        }
-
-        .inline-input { 
-            width: 60px; 
-            padding: 4px 8px; 
-            border: 1px solid #d1d5db; 
-            border-radius: 4px; 
-            text-align: center; 
-            font-weight: bold; 
-        }
+        .cat-badge { font-size: 12px; background: #e5e7eb; padding: 2px 6px; border-radius: 4px; color: #4b5563; }
+        .parcel-badge { font-size: 12px; background: #dbeafe; padding: 2px 6px; border-radius: 4px; color: #1e40af; margin-left: 5px; }
     </style>
 </head>
 <body>
+
     <div id="adminLoginScreen">
         <div class="login-card">
             <h1 style="margin-top: 0; font-size: 40px;">👨‍🍳</h1>
             <h2 style="color: #065f46; margin-top: 0;">Seller Gateway</h2>
-            <input type="password" id="adminPwd" class="login-input" placeholder="Enter Password" onkeypress="if(event.key === 'Enter') loginAdmin()">
-            <button class="login-btn" onclick="loginAdmin()">Login to Dashboard</button>
+            <input type="password" id="adminPwd" style="width:100%; padding:15px; margin-bottom:20px; text-align:center; border: 2px solid #a7f3d0; border-radius:8px;" placeholder="Password">
+            <button class="publish-btn" style="padding:15px;" onclick="loginAdmin()">Login to Dashboard</button>
         </div>
     </div>
 
@@ -363,11 +290,11 @@
 
             <div id="completedTab" class="tab-content">
                 <div class="form-card">
-                    <h3>Today's Session Revenue: ₹<span id="dailyTotal">0</span></h3>
+                    <h3>Current Session Revenue: ₹<span id="dailyTotal">0</span></h3>
                     <div id="completedList"></div>
                 </div>
                 <div class="form-card">
-                    <h3>Past 7 Sessions</h3>
+                    <h3>History (Past Sessions)</h3>
                     <div id="historyList"></div>
                 </div>
             </div>
@@ -382,14 +309,8 @@
 
                         <div class="form-card">
                             <h3>Add Custom Item to Master</h3>
-                            <div class="input-group">
-                                <label>Item Name</label>
-                                <input type="text" id="itemName" placeholder="e.g., Samosa">
-                            </div>
-                            <div class="input-group">
-                                <label>Price (₹)</label>
-                                <input type="number" id="itemPrice" placeholder="15">
-                            </div>
+                            <div class="input-group"><label>Item Name</label><input type="text" id="itemName" placeholder="e.g., Full Meals"></div>
+                            <div class="input-group"><label>Price (₹)</label><input type="number" id="itemPrice" placeholder="e.g., 80"></div>
                             <div class="input-group">
                                 <label>Category</label>
                                 <select id="itemCategory">
@@ -399,12 +320,8 @@
                                     <option value="Icecream">Icecream</option>
                                 </select>
                             </div>
-                            <div class="input-group">
-                                <label><input type="checkbox" id="itemParcel" style="width:auto;"> Available for Parcel (+₹10)</label>
-                            </div>
-                            <div class="input-group">
-                                <label><input type="checkbox" id="saveAsQuickAdd" style="width:auto;"> Pin as Quick Add Button</label>
-                            </div>
+                            <div class="input-group"><label><input type="checkbox" id="itemParcel" style="width:auto;"> Available for Parcel (+₹10)</label></div>
+                            <div class="input-group"><label><input type="checkbox" id="saveAsQuickAdd" style="width:auto;"> Pin as Quick Add Button</label></div>
                             <button class="publish-btn" onclick="publishItem()">Save to Master Catalog</button>
                         </div>
                     </div>
@@ -429,44 +346,60 @@
             <h2 style="margin-top:0;">Setup Today's Menu</h2>
             <div id="startupList" style="margin-bottom: 20px;"></div>
             <button class="publish-btn" onclick="confirmStartup()">Start Canteen Now</button>
-            <button class="action-btn btn-cancel" style="width:100%; margin-top:10px;" onclick="closeStartupModal()">Cancel</button>
+            <button class="action-btn" style="width:100%; margin-top:10px; background:#6b7280; color:white;" onclick="closeStartupModal()">Cancel</button>
         </div>
     </div>
 
     <script>
         // FIREBASE INITIALIZATION
-        const firebaseConfig = { 
-            databaseURL: "https://quickbite-canteen-default-rtdb.firebaseio.com/" 
-        };
+        const firebaseConfig = { databaseURL: "https://quickbite-canteen-default-rtdb.firebaseio.com/" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-
         const ADMIN_PASSWORD = "admin123";
 
-        function loginAdmin() {
-            let pwd = document.getElementById('adminPwd').value;
-            if (pwd === ADMIN_PASSWORD) {
-                localStorage.setItem('sellerAuth', 'true');
-                checkAdminAuth();
-            } else {
-                alert("Incorrect Password.");
+        // --- 🚀 AUTO-MIGRATION ENGINE ---
+        function migrateLocalData() {
+            // Migrating the Master Menu
+            let oldMaster = JSON.parse(localStorage.getItem('masterMenu'));
+            if (oldMaster && oldMaster.length > 0) {
+                console.log("Migrating Master Catalog to Cloud...");
+                oldMaster.forEach(item => {
+                    // Ensure new properties exist for old items
+                    item.category = item.category || "Snacks";
+                    item.allowParcel = item.allowParcel || false;
+                    db.ref('masterMenu').push(item);
+                });
+                localStorage.removeItem('masterMenu'); // Clear to prevent loops
             }
-        }
 
-        function logoutAdmin() {
-            localStorage.removeItem('sellerAuth');
-            location.reload();
+            // Migrating Quick Add Buttons
+            let oldQuick = JSON.parse(localStorage.getItem('quickAddItems'));
+            if (oldQuick && oldQuick.length > 0) {
+                console.log("Migrating Quick Add Buttons to Cloud...");
+                oldQuick.forEach(btn => db.ref('quickAddItems').push(btn));
+                localStorage.removeItem('quickAddItems');
+            }
         }
 
         function checkAdminAuth() {
             if (localStorage.getItem('sellerAuth') === 'true') {
                 document.getElementById('adminLoginScreen').style.display = 'none';
                 document.getElementById('dashboardWrapper').style.display = 'block';
+                migrateLocalData(); // RUNS ONLY ON YOUR LAPTOP ONCE
                 syncFirebase();
             } else {
                 document.getElementById('adminLoginScreen').style.display = 'flex';
             }
         }
+
+        function loginAdmin() {
+            if (document.getElementById('adminPwd').value === ADMIN_PASSWORD) {
+                localStorage.setItem('sellerAuth', 'true');
+                checkAdminAuth();
+            } else { alert("Access Denied."); }
+        }
+
+        function logoutAdmin() { localStorage.removeItem('sellerAuth'); location.reload(); }
 
         function switchTab(tabId) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -475,20 +408,18 @@
             document.getElementById(tabId).classList.add('active');
         }
 
-        // SYNC DATA WITH FIREBASE
+        // --- REAL-TIME SYNC ---
         function syncFirebase() {
-            // Status Sync
+            // 1. Status Sync
             db.ref('canteenStatus').on('value', snap => {
                 let status = snap.val() || 'closed';
-                const badge = document.getElementById('statusBadge');
-                const btn = document.getElementById('toggleBtn');
-                badge.innerText = "Status: " + status.toUpperCase();
-                btn.innerText = status === 'open' ? "Stop Canteen" : "Start Canteen";
-                btn.className = status === 'open' ? "toggle-btn btn-stop" : "toggle-btn btn-start";
+                document.getElementById('statusBadge').innerText = "Status: " + status.toUpperCase();
+                document.getElementById('toggleBtn').innerText = status === 'open' ? "Stop Canteen" : "Start Canteen";
+                document.getElementById('toggleBtn').className = status === 'open' ? "toggle-btn btn-stop" : "toggle-btn btn-start";
                 document.getElementById('liveInventoryCard').style.display = status === 'open' ? 'block' : 'none';
             });
 
-            // Master Catalog Sync
+            // 2. Master Catalog Sync
             db.ref('masterMenu').on('value', snap => {
                 const catalog = document.getElementById('catalogList');
                 catalog.innerHTML = '';
@@ -497,13 +428,16 @@
                     let item = data[key];
                     catalog.innerHTML += `
                         <div class="list-item">
-                            <div><strong>${item.name}</strong> - ₹${item.price}<br><span class="cat-badge">${item.category}</span></div>
+                            <div>
+                                <strong>${item.name}</strong> - ₹${item.price}<br>
+                                <span class="cat-badge">${item.category}</span>
+                            </div>
                             <button class="delete-btn" onclick="db.ref('masterMenu/${key}').remove()">Delete</button>
                         </div>`;
                 });
             });
 
-            // Quick Add Sync
+            // 3. Quick Add Sync
             db.ref('quickAddItems').on('value', snap => {
                 const container = document.getElementById('quickAddContainer');
                 container.innerHTML = '';
@@ -518,7 +452,7 @@
                 });
             });
 
-            // Live Stock Sync
+            // 4. Live Inventory Sync
             db.ref('canteenMenu').on('value', snap => {
                 const live = document.getElementById('liveInventoryList');
                 live.innerHTML = '';
@@ -533,22 +467,23 @@
                 });
             });
 
-            // Orders Sync
+            // 5. Orders Sync
             db.ref('orders').on('value', snap => {
-                const ordersList = document.getElementById('ordersList');
-                ordersList.innerHTML = '';
+                const list = document.getElementById('ordersList');
+                list.innerHTML = '';
                 const data = snap.val() || {};
                 Object.keys(data).forEach(key => {
                     let o = data[key];
                     if (o.status === 'completed' || o.status === 'cancelled') return;
-                    ordersList.innerHTML += `
+                    list.innerHTML += `
                         <div class="order-card ${o.status === 'pending' ? 'order-pending' : 'order-ready'}">
                             <strong>Order #${o.id}</strong><br>
+                            📞 ${o.mobile}<br>
                             Items: ${o.items.map(i=>i.name).join(', ')}<br>
                             Total: ₹${o.total}<br>
                             <div style="margin-top:10px;">
-                                <button class="action-btn btn-mark-ready" onclick="db.ref('orders/${key}/status').set('ready')">Mark Ready</button>
-                                <button class="action-btn btn-mark-complete" onclick="db.ref('orders/${key}/status').set('completed')">Complete</button>
+                                <button class="action-btn" style="background:#3b82f6;color:white;" onclick="db.ref('orders/${key}/status').set('ready')">🔔 Mark Ready</button>
+                                <button class="action-btn" style="background:#10b981;color:white;" onclick="completeOrder('${key}')">✅ Complete</button>
                             </div>
                         </div>`;
                 });
@@ -564,20 +499,16 @@
 
         function openStartupModal() {
             db.ref('masterMenu').once('value', snap => {
-                let list = ''; 
-                const data = snap.val() || {};
+                let list = ''; const data = snap.val() || {};
                 Object.keys(data).forEach(key => {
-                    let item = data[key];
-                    list += `<div class="setup-item"><label><input type="checkbox" id="check_${key}" checked> ${item.name}</label><input type="number" id="stock_${key}" placeholder="Stock" style="width:100px;"></div>`;
+                    list += `<div class="setup-item"><label><input type="checkbox" id="check_${key}" checked> ${data[key].name}</label><input type="number" id="stock_${key}" placeholder="Stock" style="width:80px;padding:5px;"></div>`;
                 });
                 document.getElementById('startupList').innerHTML = list;
                 document.getElementById('startupModal').style.display = 'flex';
             });
         }
 
-        function closeStartupModal() {
-            document.getElementById('startupModal').style.display = 'none';
-        }
+        function closeStartupModal() { document.getElementById('startupModal').style.display = 'none'; }
 
         function confirmStartup() {
             db.ref('masterMenu').once('value', snap => {
@@ -596,6 +527,13 @@
             });
         }
 
+        function completeOrder(key) {
+            db.ref(`orders/${key}`).once('value', snap => {
+                db.ref('completedOrders').push(snap.val());
+                db.ref(`orders/${key}`).remove();
+            });
+        }
+
         function publishItem() {
             let name = document.getElementById('itemName').value;
             let price = document.getElementById('itemPrice').value;
@@ -606,14 +544,11 @@
                 let item = { name, price: parseInt(price), category: cat, allowParcel: parcel };
                 db.ref('masterMenu').push(item);
                 if (quick) db.ref('quickAddItems').push(item);
-                document.getElementById('itemName').value = '';
-                document.getElementById('itemPrice').value = '';
+                document.getElementById('itemName').value = ''; document.getElementById('itemPrice').value = '';
             }
         }
 
-        function quickAdd(name, price, cat, parcel) {
-            db.ref('masterMenu').push({ name, price, category: cat, allowParcel: parcel });
-        }
+        function quickAdd(name, price, cat, parcel) { db.ref('masterMenu').push({ name, price, category: cat, allowParcel: parcel }); }
 
         checkAdminAuth();
     </script>
